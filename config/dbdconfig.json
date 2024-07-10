@@ -1,0 +1,6 @@
+{
+    "MAX_GENERATED_IMG_AGE": 3,
+    "GENERATED_IMG_DIR": "assets/dbd/imgs/generated",
+    "PERKS_IMG_DIR": "assets/dbd/imgs/perks",
+    "PERKS_IMG_URL": "https://drive.google.com/file/d/1Zo5kIN4jUiOX2Qtl1zPctqDmLZ7O4Y4y/view?usp=drive_link"
+}

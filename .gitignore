@@ -1,0 +1,18 @@
+# Python specific ignores
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore all PNG files
+*.png
+
+# Ignore environment files
+*.env
+
+# Ignore virtual environment files
+ultravenv/
+generated/
+site-packages/
+
+# Ignore all log files
+*.log
