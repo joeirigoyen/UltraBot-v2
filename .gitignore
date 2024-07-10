@@ -11,7 +11,6 @@ __pycache__/
 
 # Ignore virtual environment files
 ultravenv/
-generated/
 site-packages/
 
 # Ignore all log files

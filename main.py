@@ -27,7 +27,7 @@ class Runner:
         # Download additional assets
         # DBD Perk Images
         _perkImgUrl = mGetDBDConfig().get('PERKS_IMG_URL')
-        _perkDir = mGetFile('assets/dbd/imgs/test')
+        _perkDir = mGetFile('assets/dbd/imgs/perks')
         _perkZipName = path.join(_perkDir, 'perkimgs.zip')
         if not path.exists(_perkDir):
             mLogInfo(f'Creating directory for perk images: {_perkDir}')
