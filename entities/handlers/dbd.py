@@ -2,7 +2,7 @@
 import os
 
 # Specific imports
-from discord import Interaction
+from discord import Interaction, Message
 
 # Custom imports
 from entities.workers.dbd.worker import DbdWorker

@@ -1,5 +1,5 @@
 # Specific imports
-from discord import app_commands, Interaction, Color, Embed
+from discord import app_commands, Interaction, Color, Embed, Message, Reaction, User
 from discord.ext import commands
 
 # Custom imports
@@ -39,8 +39,8 @@ class Dbd(commands.Cog, name='dbd'):
         # Create a handler for current user
         _perks, _collage = self.__handler.mGetRandomBuild(aCtx)
         # Send message
-        _msg = "  |  ".join(_perks)
-        await aCtx.response.send_message(f'{_msg}', file=_collage)
+        _formattedPerks = "  |  ".join(_perks)
+        await aCtx.response.send_message(f'{_formattedPerks}', file=_collage)
 
     @app_commands.command(name='dbdretry', description='Reruns previous roulette only at a specified index.')
     @app_commands.describe(index='The index of the roulette where the perk to rerun is.')

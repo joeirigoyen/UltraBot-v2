@@ -50,6 +50,12 @@ class DbdWorker():
     def mGetUserBlackList(self) -> set:
         return self.__tracker.mGetBlackList()
 
+    def mSetLastMessage(self, aMessageId: str) -> None:
+        self.__tracker.mSetLastMessage(aMessageId)
+
+    def mGetLastMessage(self) -> str:
+        return self.__tracker.mGetLastMessage()
+
     def mGenerateCollage(self, aCtx: Interaction, aBuild: list) -> File:
         # For each perk in aBuild, get the image
         _images = self.__tracker.mGetImages(aBuild)

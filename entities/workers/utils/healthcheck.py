@@ -8,12 +8,11 @@ from dataclasses import dataclass
 from enum import Enum
 
 # Custom imports
-from entities.utils.files import  mParseJsonFile, mGetFile, mCleanupDbdGenImgsDir
+from entities.utils.files import  mParseJsonFile, mGetFile, mCleanupDbdGenImgsDir, mWriteJsonFile
 from log.logger import mLogInfo, mLogError
 
-
-class TaskType(Enum):
-    CLEAN_DBD_GEN_IMGS = "cleanup_dbd_generated_images"
+class TaskNames(Enum):
+    CLEANUP_DBD_GENERATED_IMAGES = 'cleanup_dbd_generated_imgs'
 
 @dataclass
 class TaskInfo:
@@ -25,44 +24,74 @@ class TaskInfo:
 class HealthWorker:
 
     # Set paths
-    __invervalsDir = 'config/hctasks.json'
-    __intervalsFile = mGetFile(__invervalsDir)
+    __invervalsPath = 'config/hctasks.json'
+    __intervalsFile = mGetFile(__invervalsPath)
 
     def __init__(self):
         # Set stop event
         self.__stopEvent = threading.Event()
         # Get intervals dictionary
-        self.__intervals = mParseJsonFile(self.__intervalsFile)
-        self.__tasks: set[TaskInfo] = self.mLoadTasks()
+        self.__intervals: dict[str, dict] = mParseJsonFile(self.__intervalsFile)
+        self.__tasks: list[TaskInfo] = self.mLoadTasks()
         # Get last run of each task every checkInterval
-        self.__checkInterval = 60 # Every minute
+        self.__checkInterval = 1 # Every minute
 
-    def mIsTaskNameValid(self, aTaskName: str) -> bool:
-        return aTaskName in TaskType.__members__
+    def mGetTasknamesSet(self) -> set:
+        return set(self.__intervals.keys())
 
-    def mLoadTasks(self) -> set:
+    def mCalculateNextRun(self, aLastRun: datetime, aInterval: timedelta | int) -> datetime:
+        # Convert interval to timedelta if int
+        if isinstance(aInterval, int):
+            aInterval = timedelta(minutes=aInterval)
+        # If next run is in the past, set next run to now + interval
+        if aLastRun + aInterval < datetime.now():
+            _nextRun = datetime.now() + aInterval
+            return _nextRun
+        return aLastRun + aInterval
+
+    def mDateTimeToStr(self, aDateTime: datetime) -> str:
+        return aDateTime.strftime('%Y-%m-%d %H:%M:%S')
+    
+    def mStrToDateTime(self, aStr: str) -> datetime:
+        return datetime.strptime(aStr, '%Y-%m-%d %H:%M:%S')
+
+    def mLoadTasks(self) -> list[TaskInfo]:
         _tasks = []
-        for _taskName, _taskInterval in self.__intervals.items():
-            # Check if task name is valid
-            if not self.mIsTaskNameValid(_taskName):
-                mLogError(f'Task {_taskName} not found')
-                continue
-            # Create task
-            _taskType = TaskType(_taskName)
-            _task = TaskInfo(_taskType, timedelta(minutes=_taskInterval), datetime.now(), datetime.now() + timedelta(minutes=_taskInterval))
+        for _taskName, _taskInfo in self.__intervals.items():
+            # Convert last run to datetime and string
+            _lastRun = _taskInfo.get('last_run', datetime.now())
+            _lastRunStr = _lastRun if isinstance(_lastRun, str) else self.mDateTimeToStr(_lastRun)
+            _lastRunDt = self.mStrToDateTime(_lastRunStr)
+            # Update last run if different
+            if _lastRunStr != _taskInfo.get('last_run'):
+                _taskInfo['last_run'] = _lastRunStr
+            # Calculate next run
+            _interval = _taskInfo.get('interval', timedelta(minutes=60))
+            _nextRun = self.mCalculateNextRun(_lastRunDt, _interval)
+            _task = TaskInfo(_taskName, _interval, _lastRunDt, _nextRun)
             _tasks.append(_task)
+        # Rewrite to json file
+        mWriteJsonFile(self.__intervalsFile, self.__intervals)
         return _tasks
 
     def mUpdateTaskRuntime(self, aTask: TaskInfo) -> None:
+        # Update internally
         aTask.last_run = datetime.now()
-        aTask.next_run = aTask.last_run + aTask.interval
+        aTask.next_run = aTask.last_run + timedelta(minutes=aTask.interval)
+        # Update in file
+        _taskInfo = self.__intervals.get(aTask.name)
+        _taskInfo['last_run'] = self.mDateTimeToStr(aTask.last_run)
+        mWriteJsonFile(self.__intervalsFile, self.__intervals)
         return aTask
 
     def mRunTask(self, task: TaskInfo) -> None:
-        if task.name == TaskType.CLEAN_DBD_GEN_IMGS:
-            mCleanupDbdGenImgsDir()
-        else:
-            mLogError(f'Task {task.name} not found')
+        match task.name:
+            case TaskNames.CLEANUP_DBD_GENERATED_IMAGES.value:
+                mLogInfo(f'Running task {task.name}')
+                mCleanupDbdGenImgsDir(aExcludeFiles=['.gitignore'])
+                mLogInfo(f'Task {task.name} finished')
+            case _:
+                mLogError(f'Task {task.name} not found')
 
     def mRun(self) -> None:
         while not self.__stopEvent.is_set():
@@ -74,8 +103,8 @@ class HealthWorker:
                     threading.Thread(target=self.mRunTask, args=(_task,)).start()
                     self.mUpdateTaskRuntime(_task)
                     mLogInfo(f'Task {_task.name} runtime updated to {_task.next_run}.')
-            mLogInfo(f'All tasks checked. Sleeping for {self.__checkInterval} seconds.')
-            time.sleep(self.__checkInterval)
+            mLogInfo(f'All tasks checked. Sleeping for {self.__checkInterval} minutes.')
+            time.sleep(self.__checkInterval * 60)
 
     def start(self):
         mLogInfo('Starting healthcheck worker')

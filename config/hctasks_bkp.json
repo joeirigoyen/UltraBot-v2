@@ -1,7 +1,7 @@
 {
     "cleanup_dbd_generated_imgs": {
         "enabled": true,
-        "interval": 15,
-        "last_run": "2024-07-14 15:54:46"
+        "interval": 1,
+        "last_run": ""
     }
 }

@@ -61,21 +61,13 @@ def mOpenFile(aPath: str) -> object:
     return _file
 
 def mParseJsonFile(aPath: str) -> dict:
-    # Open file
-    _file = mOpenFile(aPath)
-
-    # Try to parse JSON data
-    _data = _file.read()
     try:
-        _jsonData = json.loads(_data)
+        with open(aPath, 'r') as _data:
+            _jsonData = json.load(_data)
+            return _jsonData
     except json.JSONDecodeError:
         mLogError(f'File {aPath} is not a valid JSON file. Returning empty dictionary')
-        _file.close()
         return {}
-
-    # Close file
-    _file.close()
-    return _jsonData
 
 def mWriteJsonFile(aPath: str, aData: dict) -> None:
     # Open file
@@ -270,7 +262,7 @@ def mGetFile(aRelativePath: str, aCheck: bool = False) -> str:
     # Return file
     return _fullPath
 
-def mCleanupDir(aDir: str, aMinutes: int) -> None:
+def mCleanupDir(aDir: str, aMinutes: int, aExcludeFiles: list[str] = None, aExcludeExts: list[str] = None) -> None:
     # Get all files in the directory older than a certain amount of hours
     _files = os.listdir(aDir)
     _now = time.time()
@@ -278,6 +270,15 @@ def mCleanupDir(aDir: str, aMinutes: int) -> None:
     _filesToDelete = [os.path.join(aDir, _file) for _file in _files if os.path.getmtime(os.path.join(aDir, _file)) < _before]
     # Delete all files in list
     for _file in _filesToDelete:
+        # Skip if file extension is included in the exclude list
+        if aExcludeExts:
+            if os.path.splitext(_file)[1] in aExcludeExts:
+                continue
+        # Skip if file is included in the exclude list
+        if aExcludeFiles:
+            if os.path.basename(_file) in aExcludeFiles:
+                continue
+        # Delete file
         os.remove(_file)
         mLogInfo(f'File {_file} deleted')
 
@@ -287,7 +288,7 @@ def mGetDBDConfig() -> dict:
     _config = mParseJsonFile(_configFile)
     return _config
 
-def mCleanupDbdGenImgsDir() -> None:
+def mCleanupDbdGenImgsDir(aExcludeFiles: list[str] = None, aExcludeExts: list[str] = None) -> None:
     # Get config
     _config = mGetDBDConfig()
     # Get dbd generated images directory
@@ -299,7 +300,7 @@ def mCleanupDbdGenImgsDir() -> None:
     # Get cleanup interval
     _maxImgAge = _config['MAX_GENERATED_IMG_AGE']
     # Cleanup directory
-    mCleanupDir(_imgsDir, _maxImgAge)
+    mCleanupDir(_imgsDir, _maxImgAge, aExcludeFiles=aExcludeFiles, aExcludeExts=aExcludeExts)
 
 def mGetDBDDataDir() -> str:
     # Get config

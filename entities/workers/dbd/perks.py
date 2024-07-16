@@ -35,6 +35,7 @@ class PerkTracker:
         # Set perk tracking variables
         self.__tracker = {}
         self.__lastRoll = []
+        self.__lastMessage = None
         # Set black list
         self.__blacklistPath = os.path.join(self.__configDir, 'dbdblacklist.json')
         self.__blacklist = self.mLoadBlackList()
@@ -66,6 +67,13 @@ class PerkTracker:
 
     def mGetLastRoll(self) -> list:
         return self.__lastRoll
+
+    def mSetLastMessage(self, aMessage: str) -> None:
+        self.__lastMessage = aMessage
+        mLogInfo(f'Last message id set for user {self.__userId}: {aMessage}')
+
+    def mGetLastMessage(self) -> str:
+        return self.__lastMessage
 
     def mGetPerkId(self, aPerk: dict) -> str:
         # Get keys of perk

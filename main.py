@@ -17,7 +17,7 @@ class Runner:
     def __init__(self):
         # Load the environment variables
         load_dotenv()
-        mLogInfo('Environment variables loaded')
+        mLogInfo('Environment variables loaded')    
     
     def mRunBot(self):
         """
