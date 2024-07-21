@@ -10,7 +10,7 @@
         "title": "Ace in the Hole"
     },
     "p-666-96dd72a5a1fc43d797ca35ba7baaad91": {
-        "character": "Meg",
+        "character": "Meg Thomas",
         "img": "assets/dbd/imgs/perks\\p-666-96dd72a5a1fc43d797ca35ba7baaad91.png",
         "description": {
             "mainEffect": "Instantly heal the equivalent of 1 health state.",
@@ -170,7 +170,7 @@
         "title": "Boil Over"
     },
     "j-666-af906b220494438482d69e86957b0bc9": {
-        "character": "Dwight",
+        "character": "Dwight Fairfield",
         "img": "assets/dbd/imgs/perks\\j-666-af906b220494438482d69e86957b0bc9.png",
         "description": {
             "main_effect": "Unlocks potential in your Aura-reading ability.",
@@ -240,7 +240,7 @@
         "title": "Borrowed Time"
     },
     "n-666-bd0e15bce5034b2facb2784535557330": {
-        "character": "Claudette",
+        "character": "Meg Thomas",
         "img": "assets/dbd/imgs/perks\\n-666-bd0e15bce5034b2facb2784535557330.png",
         "description": {
             "main_effect": "Increases your Healing speed by 30/40/50%.",
@@ -510,7 +510,7 @@
         "title": "Empathic Connection"
     },
     "q-666-1b09aba373014605b66008c82ab5c9c1": {
-        "character": "Claudette",
+        "character": "Meg Thomas",
         "img": "assets/dbd/imgs/perks\\q-666-1b09aba373014605b66008c82ab5c9c1.png",
         "description": {
             "main_effect": "The Auras of injured or dying Survivors are revealed to you within 64/96/128 meters.",
@@ -923,7 +923,7 @@
         "title": "Prove Thyself"
     },
     "l-666-d6d6a737d3c64a6eb2ba2b9ecb97faa8": {
-        "character": "Meg",
+        "character": "Meg Thomas",
         "img": "assets/dbd/imgs/perks\\l-666-d6d6a737d3c64a6eb2ba2b9ecb97faa8.png",
         "description": {
             "mainEffect": "Suppresses Loud Noise Notification triggered by rushing to vault Windows, Pallets, or Lockers.",
@@ -1054,7 +1054,7 @@
         "title": "Second Wind"
     },
     "c-666-b35b14f4d90e4d729fb48022d6d1d5bd": {
-        "character": "Claudette",
+        "character": "Meg Thomas",
         "img": "assets/dbd/imgs/perks\\c-666-b35b14f4d90e4d729fb48022d6d1d5bd.png",
         "description": {
             "mainEffect": "Unlocks the Self-Care ability, allowing you to self-heal without needing a Med-Kit.",
@@ -1144,7 +1144,7 @@
         "title": "Spine Chill"
     },
     "u-666-f8e02d89884b480a8afd4b6cf1452daf": {
-        "character": "Meg",
+        "character": "Meg Thomas",
         "img": "assets/dbd/imgs/perks\\u-666-f8e02d89884b480a8afd4b6cf1452daf.png",
         "description": {
             "mainEffect": "Starting to run triggers Sprint Burst, granting a +50% Haste Status Effect for 3 seconds.",

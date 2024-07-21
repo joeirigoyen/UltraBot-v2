@@ -10,7 +10,7 @@ from log.logger import mLogError, mLogInfo, mLogDebug
 from entities.utils.datahandler import mLoadCsvData, mIncrementColumn, mSaveCsvData, mCreateUsageGraph
 from entities.utils.files import mCleanupDir, mGetAssetsDir, mGetDBDConfig, mGetDBDDataDir, mGetFile, mEnsureFile
 from entities.utils.images import mCreateCollage, mSaveImage
-from entities.workers.dbd.perks import PerkTracker
+from entities.workers.dbd.perks import PerkTracker, Perk
 
 
 class DbdWorker():
@@ -20,45 +20,20 @@ class DbdWorker():
     __dbdGenImagesDir = os.path.join(__dbdAssetsDir, 'imgs', 'generated')
 
     def __init__(self, aCtx: Interaction):
-        super().__init__()
         # Set owner
         self.__userId = aCtx.user.id
         self.__userName = aCtx.user.name
         # Get blacklist from config
         self.__tracker = PerkTracker(self.__userId, self.__userName)
-        self.__running = False
         # Log worker creation
         mLogInfo(f'Worker {self.__userId} created')
-
-    def mIsRunning(self):
-        return self.__running
-
-    def mStart(self):
-        if not self.mIsRunning():
-            self.__running = True
-            mLogInfo(f'Worker {self.__userId} started')
-        else:
-            mLogError(f'Worker {self.__userId} is already running')
-
-    def mStop(self):
-        if self.mIsRunning():
-            self.__running = False
-            mLogInfo(f'Worker {self.__userId} stopped')
-        else:
-            mLogError(f'Worker {self.__userId} is not running')
 
     def mGetUserBlackList(self) -> set:
         return self.__tracker.mGetBlackList()
 
-    def mSetLastMessage(self, aMessageId: str) -> None:
-        self.__tracker.mSetLastMessage(aMessageId)
-
-    def mGetLastMessage(self) -> str:
-        return self.__tracker.mGetLastMessage()
-
-    def mGenerateCollage(self, aCtx: Interaction, aBuild: list) -> File:
+    def mGenerateCollage(self, aCtx: Interaction, aBuild: list[Perk]) -> File:
         # For each perk in aBuild, get the image
-        _images = self.__tracker.mGetImages(aBuild)
+        _images = [_perk.img for _perk in aBuild]
         # Get username
         _username = aCtx.user.name
         # Get title
@@ -75,8 +50,8 @@ class DbdWorker():
         
         # Get four random perks
         _build = self.__tracker.mGetRoll()
-        _buildNames = [self.__tracker.mGetPerkName(_id) for _id in _build]
-        _images = self.__tracker.mGetImages(_build)
+        _buildNames = [_perk.title for _perk in _build]
+        _images = [_perk.img for _perk in _build]
         
         # Get collage
         _username = aCtx.user.name
@@ -93,26 +68,26 @@ class DbdWorker():
         # Return build names and images
         return _buildNames, _image
 
-    def mAddToBlackList(self, aPerkId: str) -> str:
+    def mAddToBlackList(self, aPerk: Perk) -> str:
         # Add perk to blacklist
-        self.__tracker.mAddPerkToBlackList(aPerkId)
+        self.__tracker.mAddPerkToBlackList(aPerk)
 
         # Log action
-        _name = self.__tracker.mGetPerkName(aPerkId)
+        _name = aPerk.title
         _msg = f'Perk {_name} added to blacklist for user {self.__userId}'
         mLogInfo(_msg)
 
-    def mRemoveFromBlackList(self, aPerkId: str) -> str:
+    def mRemoveFromBlackList(self, aPerk: Perk) -> str:
         # Remove perk from blacklist
-        self.__tracker.mRemovePerkFromBlackList(aPerkId)
+        self.__tracker.mRemovePerkFromBlackList(aPerk)
         # Log action
-        _name = self.__tracker.mGetPerkName(aPerkId)
+        _name = self.__tracker.mGetPerkNameById(aPerk)
         _msg = f'Perk {_name} removed from blacklist for user {self.__userId}'
         mLogInfo(_msg)
 
     def mReplacePerk(self, aCtx: Interaction, aPerkIndex: int) -> str:
         # Get last roll
-        _lastRoll = self.__tracker.mGetLastRoll()
+        _lastRoll = self.__tracker.last_roll
         
         # Check if there are perks to replace
         if len(_lastRoll) < self.__tracker.BUILD_SIZE:
@@ -121,12 +96,12 @@ class DbdWorker():
         # Get new valid perk and update last roll
         _newPerk = self.__tracker.mGetRandomValidPerk()
         _lastRoll[aPerkIndex] = _newPerk
-        self.__tracker.mUpdateLastRoll(_lastRoll)
-        _buildNames = [self.__tracker.mGetPerkName(_id) for _id in _lastRoll]
+        self.__tracker.last_roll = _lastRoll
+        _buildNames = [_perk.title for _perk in _lastRoll]
         
         # Make new collage
         _username = aCtx.user.name
-        _images = self.__tracker.mGetImages(_lastRoll)
+        _images = [_perk.img for _perk in _lastRoll]
         _title = f'Build for user {_username}'
         _collage = mCreateCollage(_images, 800, 160, aTitle=_title)
 
@@ -141,20 +116,20 @@ class DbdWorker():
         return self.__tracker.mGetWhitelistedPerkNames()
 
     def mGetBlacklistedPerkNames(self) -> list:
-        return [self.__tracker.mGetPerkName(_id) for _id in self.__tracker.mGetBlackList()]
+        return self.__tracker.mGetBlacklistedPerkNames()
 
     def mGetPerkNames(self) -> list:
         return self.__tracker.mGetAllPerkNames()
 
     def mGetPerkName(self, aId: str) -> str:
-        return self.__tracker.mGetPerkName(aId)
+        return self.__tracker.mGetPerkNameById(aId)
 
-    def mGetHelp(self, aId: str) -> str:
+    def mGetHelp(self, aPerk: Perk) -> str:
         # Get description
-        _description: dict = self.__tracker.mGetDescription(aId)
+        _description: dict = aPerk.description
 
         # Format description
-        _name = self.__tracker.mGetPerkName(aId)
+        _name = self.__tracker.mGetPerkNameById(aPerk)
         _body = ""
         for _key in _description:
             _line = _description.get(_key)
@@ -241,7 +216,7 @@ class DbdWorker():
         self.__tracker.mSetLastRoll(aBuild)
         _collage = self.mGenerateCollage(aCtx, self.__tracker.mGetLastRoll())
         # Log and return
-        _names = [self.__tracker.mGetPerkName(_id) for _id in self.__tracker.mGetLastRoll()]
+        _names = [self.__tracker.mGetPerkNameById(_id) for _id in self.__tracker.mGetLastRoll()]
         return _names, _collage
 
     def mGetUsageGraph(self, aUser: str = None, aPerk: str = None) -> str:

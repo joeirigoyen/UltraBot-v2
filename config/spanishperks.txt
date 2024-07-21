@@ -1,0 +1,1257 @@
+Meg
+
+Adrenalina	
+Cuando estás a punto de escapar, te invade una energía inesperada.
+Te curas instantáneamente un estado de salud y corres a un 150 % de tu velocidad normal de carrera durante 5 segundos en cuanto las puertas de salida se activan.
+Si estás incapacitado en el momento que debería actuar, Adrenalina no surte efecto hasta que te liberas. Adrenalina te despierta si se activa mientras estás dormido.
+Adrenalina permite ignorar el efecto de estado Agotamiento. Causa el efecto de estado Agotamiento IconStatusEffects exhausted durante 60/50/40 segundos.
+
+
+Meg
+
+Agilidad	Tras dar un salto acelerado, aceleras a un 150% de tu velocidad normal de carrera durante un máximo de 3 segundos.
+Causa Agotamiento IconStatusEffects exhausted durante 60/50/40 segundos. Agilidad no se puede usar cuando sufres agotamiento. No te recuperas del Agotamiento al correr.
+
+"¿Te has enfadado?" — Feng Min
+
+Feng
+
+Alerta	Tus agudos sentidos están en alerta máxima.
+Cuando el Asesino rompe algo, puedes verlo durante 3/4/5 segundos.
+
+"Tengo una vista privilegiada". — Feng Min
+
+Feng
+
+A mano descubierta	Mejora la capacidad de percibir auras de tu equipo y tuya.
+Aumenta el alcance de la percepción de auras en 4/6/8 metros.
+"Prestar atención es lo que me ha mantenido con vida todos estos años. Eso y mi atractivo, por supuesto". — Ace Visconti
+
+Ace
+
+As en la manga	Parece que la suerte siempre está de tu parte.
+Al sacar un Objeto IconHelp items de un Cofre IconHelp chests, hay un 100% de probabilidades de que lleve un Accesorio IconHelp addons Muy Raro (o inferior) y un 10/25/50 % de probabilidades de que lleve un Accesorio Poco Común (o inferior).
+
+Al escapar, conservas cualquier Accesorio que tenga tu objeto.
+
+"No todo lo que brilla es oro. Pero el oro no vale nada en este lugar, así que esto podría ser útil". — Ace Visconti
+
+Ace
+
+Autocuración	Permite curarte sin Objetos Curativos IconItems firstAidKit a un 35 % de la velocidad normal.	Claudette
+
+Caída equilibrada	Tienes una agilidad inigualable.
+Tras caer desde cierta altura, tus reflejos felinos reducen el tiempo que tardas en recuperarte un 75 % y el volumen de los gruñidos al aterrizar un 100 %. Empiezas a correr a un 150 % de tu velocidad normal durante un máximo de 3 segundos.
+
+Causa el efecto de estado Agotamiento IconStatusEffects exhausted durante 60/50/40 segundos.
+
+No puedes usar Caída Equilibrada mientras sufres Agotamiento.
+
+No te recuperas del efecto de estado Agotamiento mientras corres.
+
+"He saltado desde lugares más altos". — Nea Karlsson
+
+Nea
+
+Carne resbalosa	Has desarrollado una forma eficiente para liberarte de las trampas para osos IconPowers trap y los ganchos IconHelpLoading hook
+Otorga hasta {{{1}}}/{{{2}}}/{{{3}}} intentos más para liberarte de ganchos. La probabilidad de libertarte de las trampas para osos aumenta en un {{{4}}}/{{{5}}}/{{{6}}}.
+
+Todos
+
+Caza menor	Tienes la innegable habilidad de detectar el peligro. Obtén una advertencia sonora cuando mires en la dirección de los tótems y trampas del asesino en un área cónica de 45 grados, dentro de un radio de 8/10/12 metros. Caza menor tiene un tiempo de recuperación de 15/12/10 segundos cada vez que se activa.
+Sólo funciona con trampas colocadas por los asesinos.
+
+Todos
+
+Fajador	Habilidad activable.
+No eres ningún blandengue, precisamente. Si te han herido, te entra un subidón de adrenalina para evitar los ataques.
+
+Pulsa el botón de Habilidad Activa mientras corres para obtener el Efecto de Estado' de Resistencia IconStatusEffects enduranceSurvivor durante 1 segundo.
+Causa el Efecto de Estado de Agotamiento IconStatusEffects exhausted durante 60/50/40 segundos.
+No te recuperas del estado Agotamiento mientras corres.
+"Íbamos por un callejón una noche cuando casi me da una botella de cerveza, y luego otra, y otra más. Yo solo podía pensar: "Cómo nos vamos a divertir, muchachos. ¡Al lío!". Fue una pelea justa ¡en serio!" — David King
+
+David
+
+Con calle	Las largas salidas nocturnas te han enseñado a sacar partido de lo que tienes.
+Reduce la velocidad de consumo de la carga de Objetos IconHelp items en un 25 % para ti y para los aliados en un alcance de 8 metros.
+
+Una vez fuera del alcance, el efecto durará 15 segundos.
+
+"¡Lo estás haciendo mal! Déjame que te enseñe a cómo se hace". — Nea Karlsson
+
+Nea
+
+Conocimientos de botánica	Usas algunas plantas halladas en La Hoguera para elaborar tinturas que inhiben el sangrado.
+La velocidad de curación aumenta un 50% y la eficiencia de los Objetos Curativos IconItems firstAidKit se reduce un 11/22/33 %.
+
+"Unos conocimientos básicos sobre botánica podrían salvar tu vida algún día". — Claudette Morel
+
+Claudette
+
+Déjà Vu	Permite percibir Auras. Tu paranoia y tu terror al fracaso te impulsan a evitar repetir viejos errores.
+Al principio de cada partida y cada vez que se complete un generador, se te revelan durante 30/45/60 segundos las Auras IconHelp auras de 3 Generadores IconHelpLoading generators próximos entre sí.
+
+Si tienes en la mano un Mapa IconItems map que pueda localizar Generadores, los revelados por Déjà Vu se añaden a él.
+
+Todos
+
+De pies ligeros	Corres con los pies ligeros, lo que hace que sea más difícil seguir tu rastro. Las huellas de pisada permanecen 1/2/3 segundos menos de lo normal.	Todos
+
+Empatía	Permite percibir Auras.
+Las Auras IconHelp auras de aliados Agonizantes IconHelp dying o Heridos IconHelp injured se te revelan en un radio 64/96/128 metros. Empatía no revela las auras de aliados cuando están en contacto directo con el Asesino.
+
+Claudette
+
+Escalofríos	Un estremecimiento sobrenatural te advierte de que algo malo está a punto de ocurrir.
+Recibes un aviso cuando el Asesino vea en tu dirección dentro de un radio de 36 metros.
+
+Mientras Escalofríos está activa, la probabilidad de que surjan Pruebas de Habilidad aumenta en un 10 %, y el tamaño de sus áreas de éxito se reduce en un 10 %.
+
+Mientras Escalofríos está activa, las velocidades de Reparación, Curación, Sabotaje, Desenganche, Salto, Purificación, Búsqueda y apertura de Puertas de Salida aumentan un 2/4/6 %.
+
+"Hay una voz que no usa palabras. Escucha" — Cintas perdidas: Sassy
+
+Todos
+
+Esperanza	Estar tan cerca de poder escapar renueva tus esperanzas y tus fuerzas.
+Obtienes un 5/6/7 % del Efecto de Estado Celeridad IconStatusEffects haste durante 120 seconds en cuanto las Puertas de Salida IconHelp exitGates se activan.
+
+"¡Apretaos bien los cinturones, capullos! ¡Que nos largamos!" — Cintas perdidas: Nikki
+
+Todos
+
+Espíritu Calmado	Parece que los animales confían en ti, ya que mantienen la calma en tu presencia.
+Reduce un 80/90/100 % la probabilidad de alertar a criaturas del bosque.
+
+Espíritu Calmado te permite controlar el impulso de gritar.
+
+Jake
+
+Esto no puede estar pasando	Das lo mejor de ti en las circunstancias de mayor presión.
+El tamaño de las áreas de éxito para superar las Pruebas de Habilidad IconHelp skillChecks excelentes de reparación, curación y sabotaje aumenta un 10/20/30 % si estás herido.
+
+Todos
+
+Evasión urbana	Los años que has pasado huyendo de la policía te han enseñado a moverte con sigilo.
+La velocidad de movimiento mientras avanzas agachada aumenta un 90/95/100 %.
+
+"La pintura aún está fresca, pero yo me fui hace tiempo". — Nea Karlsson
+
+Nea
+
+Familia	Desbloquea el potencial en la habilidad de analizar auras. Mientras estés en el gancho, el aura de 8/12/16 metros los supervivientes se revela al resto de supervivientes.
+"Sed amables los unos con los otros. Estamos juntos en esto". — Cintas perdidas: Sujan
+
+Todos
+
+Fuera rollos	Sufres el Efecto de Estado Desesperanza IconStatusEffects broken durante toda la partida.
+Tu sangre espesa se coagula prácticamente al instante.
+
+No dejas charcos de Sangre IconStatusEffects bleeding.
+Los gruñidos de Dolor causados por las heridas se reducen un 0/25/50 % en todo momento.
+Te permite recuperarte completamente del Estado Agonizante IconHelp dying.
+"Se me fue la olla. Le pegué de ostias al flipao ese. Me echaron y todo el percal... Así que me fui al bar, me tomé unas pintas y a otra cosa. Total, me la pela, ¿me entiendes o qué? Yo paso". — David King
+
+David
+
+Golpe Decisivo	Valiéndote de lo primero que encuentras a mano, golpeas a tu agresor en un intento desesperado por escapar.
+Después de que alguien te desenganche o de que te desenganches por tus propios medios, Golpe Decisivo se activará y podrás usarlo durante 60 segundos.
+
+Si el Asesino te atrapa mientras dure el efecto de Golpe Decisivo, llevarás a cabo una Prueba de Habilidad IconHelp skillChecks para escapar automáticamente de su agarre y aturdirlo durante 3 segundos.
+
+Tras ello, Golpe Decisivo se desactivará independientemente de si has tenido éxito o no en tu intento de activar Golpe Decisivo.
+Si lo consigues, te convertirás en la obsesión.
+Aumenta las probabilidades de que te conviertas en la obsesión.
+El Asesino no puede obsesionarse con más de un Superviviente.
+La habilidad y sus efectos se anularán si se activan las Puertas de Salida IconHelp exitGates
+"No hay nada de qué tener miedo". — Laurie Strode
+
+Laurie
+
+Esprint	Cuando te pones a correr, aceleras a un 150% de tu velocidad normal de carrera durante un máximo de 3 segundos.
+Causa el Efecto de Estado Agotamiento IconStatusEffects exhausted durante 60/50/40 segundos.
+
+No puedes usar Esprint mientras sufres Agotamiento.
+
+No te recuperas del efecto de estado Agotamiento mientras corres.
+
+Meg
+
+Instinto de saqueador	Desbloquea el potencial de la habilidad de analizar auras. Las auras IconHelp auras de los cofres IconHelp chests se te revelan cuando te encuentras en un radio de 16/24/32 metros. Otorga una posibilidad {{{4}}}/{{{5}}}/{{{6}}} superior de encontrar un objeto IconHelp items de mayor rareza en los cofres.	Todos
+
+Inquebrantable	Tu experiencia en combate te ha enseñado alguna cosa que otra sobre superviviencia.
+Podrás recuperarte por completo del Estado Agonizante IconHelp dying Una Vez por Partida. Aumenta en un 15/20/25 % la velocidad de recuperación cuando estás agonizante.
+
+"¡Mierda! ¡Estoy bien jodido!". — Bill Overbeck
+
+Bill
+
+Líder	Logras organizar un equipo para que se coordine con más eficacia.
+Aumenta un 15/20/25 % las velocidades de curación, sabotaje, rescate de ganchos, purificación, apertura de puertas de salida y búsqueda en cofres de los demás Supervivientes cuando se encuentran a menos de 8 metros de ti.
+
+Los Supervivientes no pueden recibir el efecto de más de un Líder.
+
+El efecto sigue activo durante 15 segundos una vez fuera del alcance de Líder.
+
+Dwight
+
+Lo conseguiremos	Ayudar a otros aumenta tu moral. Por cada superviviente que rescates de un gancho, ganas un 30/60/90 segundos adicional de aumento en velocidad para curar hasta un máximo del 100 % durante {{{4}}}/{{{5}}}/{{{6}}}.
+"Confío en que podremos salir sanos y salvos si nos ayudamos entre nosotros".
+
+Todos
+
+Nadie se queda atrás	Es inconcebible abandonar a alguien. Una vez que la puerta de salida se abra, gana un 50/75/100 % de puntos de sangre IconHelp bloodpoints adicionales en la categoría de Altruismo y por realizarlas un 4/8/12 % más rápido.
+"... si, no me jodas, pero aún podemos ser más listos y derrocarlo si trabajamos juntos. ¡Deje de ser previsible y egoísta!" — Cintas perdidas: Clyde
+
+Todos
+
+Objeto de Obsesión	Un vínculo sobrenatural te une al asesino.
+Cuando ves en su dirección, vuestro vínculo os muestra el Aura IconHelp auras del uno al otro, y viceversa. Solo se aplica si estás fuera del Radio de Terror del asesino.
+
+Si eres la Obsesión IconHelp obsession, este efecto se activa en un alcance máximo de 56/64/72 metros. En caso contrario, de 44/56/64 metros.
+
+Aumenta las probabilidades de que seas la obsesión del asesino.
+El Asesino no puede obsesionarse con más de un Superviviente a la vez.
+"¡Me estaba mirando!". — Laurie Strode
+
+Laurie
+
+Ponte a prueba	Por cada otro Superviviente trabajando en un Generador IconHelpLoading generators dentro de un rango de 4 metros, recibes una bonificación del 15 % de la velocidad de Reparación. La misma bonificación también se aplica al resto de Supervivientes dentro de ese rango.
+Consigues un 50/75/100 % más de Puntos de Sangre por Acciones Cooperativas.
+
+Los Supervivientes solo pueden recibir un efecto Demuestra lo que Vales a la vez.
+
+"¡Te mostraré lo que puedo hacer!" — Dwight Fairfield
+
+Dwight
+
+Premonición	Tienes la innegable habilidad de detectar el peligro. Obtén una advertencia sonora cuando mires en dirección del asesino en un área cónica de 45 grados dentro de un radio de 60/45/30 segundos. La habilidad de Premonición tiene un tiempo de recuperación de {{{4}}}/{{{5}}}/{{{6}}} segundos cada vez que se activa. Premonición supera cualquier habilidad de Sigilo del asesino.
+"¡Tengo un mal presentimiento sobre esto!"
+
+Todos
+
+Velocidad Silenciosa	No haces tanto ruido como los demás cuando saltas sobre obstáculos o te ocultas en las Taquillas IconHelp lockers a toda velocidad.
+El alcance de sonido y la detección del ruido para las acciones de salto y escondite se reducen en un 100 %.
+
+Este efecto solo se puede activar una vez cada 30/25/20 segundos.
+
+Meg
+
+Resiliencia	Te motivas cuando te encuentras en aprietos. Otorga un 3/6/9 % de velocidad adicional a reparación, curación, sabotaje, rescate, salto, purificación, apertura de puertas de salida y búsqueda cuando estás herido(a) IconHelp injured.
+"Concéntrate, aunque sean tiempos desesperados".
+
+Todos
+
+Abandonado a Tu Suerte	Permite percibir Auras.
+Si eres el último superviviente con vida en la Partida, podrás ver el Aura IconHelp auras de la Trampilla IconHelp hatch a una distancia de 24/28/32 metros.
+
+"No estoy para tonterías. ¡Esto lo hago yo aunque sea solo!" — Bill Overbeck
+
+Bill
+
+Sabotear	Permite percibir Auras.
+Puedes ver las Auras IconHelp auras de los Ganchos IconHelpLoading hook en un radio de 56 metros desde el punto de recogida si el Asesino carga con un Superviviente.
+Permite sabotear Ganchos sin necesidad de tener una Caja de Herramientas IconItems toolbox.
+
+Sabotear un Gancho sin Caja de Herramientas lleva 2.5 segundos.
+Sabotaje tiene un tiempo de recarga de 60 segundos.
+Jake
+
+Sentido oscuro	Desbloquea el potencial en la habilidad de analizar auras. Cuando las Puertas de salida IconHelp exitGates se te revela el aura IconHelp auras del asesino durante {{{1}}}/{{{2}}}/{{{3}}}.
+"Como dijo un sabio: Relájate, no te apresures ¡y no te preocupes! La mejor forma de combatirlo es saber cómo piensa". — Murf, The Lost Tapes
+
+Todos
+
+Subir las Apuestas	Al final todo saldrá bien, simplemente lo sabes.
+Tu confianza fortalece la esperanza de los que te rodean. Por cada superviviente vivo, otorga un 1/2/3 % de Suerte IconStatusEffects luck adicional al resto de supervivientes.
+
+"¿Qué puedo decir? Solo soy un tipo con mucha suerte... Seguro que algo se te pega". — Ace Visconti
+
+Ace
+
+Pericia Técnica	Se te da muy bien manejar máquinas con precisión y cuidado.
+Tus reparaciones hacen menos ruido y la distancia desde la que se oyen se reduce en 8 metros. Con una Prueba de Habilidad IconHelp skillChecks de reparación fallida, el motor no explota
+
+"A sigilosa no me gana nadie". — Feng Min
+
+Feng
+
+Tiempo Prestado	Te invade una energía inesperada cuando rescatas a un aliado de un gancho.
+Los supervivientes que descuelgues:
+
+Mantienen su efecto de estado de Resistencia IconStatusEffects enduranceSurvivor durante 10 segundos adicionales.
+
+Mantienen la bonificación de velocidad de movimiento durante 10 segundos adicionales.
+
+Si sufre algún daño mientras tanto o si el temporizador de Herida Profunda llega a cero, se quedará en Estado Agonizante IconHelp dying.
+
+"Seguro que duele un montón, pero de esta no la palmas, así que levanta, soldado. ¡En marcha!" — Bill Overbeck
+
+Bill
+
+Solo Quedo Yo	A medida que tus amigos caigan en manos del asesino, te embargará la soledad y la capacidad del Asesino para detectar tu aura se verá perturbada.
+Cada vez que un Superviviente sea asesinado o sacrificado, obtendrás un distintivo. Por cada distintivo, el Asesino no podrá detectar tu Aura IconHelp auras a una distancia máxima de 20/22/24 metros por cada Superviviente asesinado o sacrificado.
+
+Si eres el último superviviente con vida:
+
+
+Obtienes un 75 % de velocidad de acción al reparar generadores.
+
+Obtienes un 50 % de velocidad de acción al abrir las Puertas de Salida IconHelp exitGates o la Trampilla IconHelp hatch
+
+Aumenta las probabilidades de que te conviertas en la obsesión de asesino.
+El asesino no puede Obsesionarse con mas de un superviviente.
+"Era el hombre del saco". — Laurie Strode
+
+Laurie
+
+Vínculo	Desbloquea la capacidad de percibir Auras. Se te revelan las Auras IconHelp auras de los aliados en un radio de 20/28/36 metros.
+"Tenemos que trabajar como un equipo, ¡Necesito que sobreviváis para que yo también pueda hacerlo!" — Dwight Fairfield
+
+Dwight
+
+Vamos a Vivir para Siempre	Tus amigos merecen la máxima protección.
+Cuando cures a un superviviente agonizante, tu velocidad de curación aumenta un 100%. Además, cualquiera de las siguientes acciones activa la función secundaria de esta habilidad: Rescate de gancho seguro, Sufrir un golpe por proteger a un superviviente, Rescatar a un superviviente aturdiendo al asesino con un palé, Rescatar a un superviviente cegando al asesino con una linterna.
+
+Cuando esté activa la función secundaria de esta habilidad, si curas a otro superviviente en estado agonizante, obtendrá el Estado de Efecto Resistencia IconStatusEffects enduranceSurvivor durante 10 segundos y desactiva la función secundaria.
+
+"¡Venga, atrévete! Me la suda, socio". — David King
+
+David
+
+Voluntad de hierro	Puedes concentrarte y entrar en un estado semimeditativo para atenuar el dolor.
+Los gruñidos provocados por heridas se reducen un 75 % no funciona con Agotamiento IconStatusEffects exhausted, no provoca Agotamiento.
+
+Jake
+
+¡Despierta!	Permite percibir Auras.
+Cuando se repare el último Generador IconHelpLoading generators , verás las Puertas de Salida IconHelp exitGates dentro de un radio de 128 metros. Mientras abres una puerta el resto de Supervivientes verá tu Aura IconHelp auras dentro de una distancia de 128 metros.
+
+Mientras ¡Despierta! esté activo, abrirás las Puertas de Salida un 15/20/25% más rápido.
+
+Quentin
+
+Farmacia	Se te da bien encontrar medicinas, si te han herido, se activa Farmacia.
+Puedes registrar Cofres IconHelp chests un 40/60/80% más rápido. Además, haces menos ruido, y la distancia desde la que se oye se reduce 8 metros.
+
+Farmacia te garantiza un Botiquín de Emergencia FulliconItems emergencyMed-Kit tras completar la interacción.
+
+Quentin
+
+Vigilia	Cuidas a tus amigos hasta en las situaciones más extremas.
+Los aliados en un alcance de 8 metros y tú os recuperáis de los efectos de estado Agotamiento IconStatusEffects exhausted, Hemorragia IconStatusEffects bleeding, Laceración IconStatusEffects mangled, Entorpecimiento IconStatusEffects hindered, Ceguera IconStatusEffects vision, Vulnerabilidad IconStatusEffects exposed, Desesperanza IconStatusEffects broken e Inconsciencia IconStatusEffects oblivious un 10/15/20 % más rápido. Una vez fuera del alcance, el efecto durará 15 segundos.
+
+"Estaré aquí cuando despiertes. Lo lograrás." (Quentin Smith)
+
+Quentin
+
+Tenacidad	Nada puede detenerte. Tu feroz tenacidad en las situaciones más extremas te permite arrastrarte un 50 % más rápido y recuperarte al mismo tiempo. Los gruñidos de dolor en estado agonizante se reducen en 75 %
+"¿Qué coño es esto? ¡Voy a acabar con este gilipollas!!" — Detective David Tapp
+
+Tapp
+
+Corazonada	Permite percibir Auras. Cuando se complete un Generador, podrás ver el Aura IconHelp auras de los Generadores IconHelpLoading generators, Cofres IconHelp chests, Tótems IconHelpLoading totem en un radio de 32/48/64 metros durante 10 segundos.
+Si tienes en la mano un Mapa IconItems map que pueda localizar Objetivos, Generadores, Cofres y Tótems revelados con Corazonada, se añaden al Mapa.
+
+"¿Podría decirnos dónde estuvo anoche?" — Detective David Tapp
+
+Tapp
+
+Bajo Vigilancia	Cuando estas cerca del Asesino IconHelpLoading killer, te llena de determinación. Por cada 15 seconds que estés dentro del Radio de Terror del asesino y no te esté persiguiendo, consigues una medalla hasta un máximo de 2/3/4 Distintivos.
+Cuando Bajo Vigilancia tiene al menos 1 medalla, las Pruebas de Habilidad IconHelp skillChecks superadas se consideran excelentes y consumen 1 medalla.
+
+"Te tenía de rodillas. Luego huiste, huiste asustado porque te tenía. ¡Voy a cerrar este caso!" — Detective David Tapp
+
+Tapp
+
+Baila Conmigo	Cuando das un salto rápido o sales corriendo de una Taquilla IconHelp lockers, no dejas Marcas de Arañazos durante 3 segundos.
+Baila Conmigo tiene un tiempo de recuperación de 60/50/40 segundos.
+
+"Otra canción empieza a sonar,
+Baila conmigo, se avecina tempestad.
+Sigue mis pasos, sígueme el ritmo.
+Hasta el amanecer, baila conmigo". — "Baila Conmigo", de Kate Denson
+
+Kate
+
+Oportunidades	Permite percibir Auras.
+Se te revelan las Auras de Palés IconHelp pullDown y saltos a menos de 32 metros.
+
+"Madruga, esfuérzate, trabaja con empeño.
+Apunta a la fama y dispara sin dudar.
+La fe y la familia debes valorar.
+Crea oportunidades para cumplir tus sueños". — "Oportunidades", de Kate Denson
+
+Kate
+
+Arrebato	Tienes un espíritu luchador y haces todo por zafarte del enemigo.
+Tus efectos de forcejeo contra el Asesino aumentan en un 60/70/80 %.
+
+Nublas la habilidad del Asesino de ver Auras IconHelp auras de Gancho IconHelpLoading hook en un radio de 16/16/16 metros.
+
+Obtienes un 33 % del progreso de forcejeo actual cuando el asesino caiga desde una gran altura.
+
+"A golpes y patadas
+intento liberarme:
+tus manos no pueden pararme". — "Arrebato", de Kate Denson
+
+Kate
+
+Distracción	Habilidad Activable.
+Se activa cuando permaneces 30 segundos en el Radio de Terror del asesino mientras no estás en una persecución.
+
+A continuación, pulsa el botón de Habilidad Activa estando agachado y sin moverte para lanzar una piedra que produce un ruido intenso para el asesino a una distancia de 10/15/20 metros.
+La habilidad se desactiva tras utilizarse.
+"Está el camino facil y el camino correcto. Si no eres capaz de distinguirlos, puedes convertirte en un monstruo". — Adam Francis
+
+Adam
+
+Liberación	La habilidad se activa tras realizar un rescate de enganche seguro a otro superviviente.
+Ahora tienes un 100 % de probabilidad de desengancharte cuando intentes escapar.
+
+Cuando te liberas del Gancho IconHelpLoading hook, sufres el efecto de estado Desesperanza IconStatusEffects broken durante 100/80/60 segundos.
+
+"Un hombre muy estricto me crió y me enseñó a sacarle el máximo partido a una situación desfavorable". — Adam Francis
+
+Adam
+
+Autodidacta	Empiezas la partida con una penalizacion de progreso del 25 % en Pruebas de Habilidad IconHelp skillChecks de curar a los Supervivientes IconHelpLoading survivor.
+Por cada prueba de habilidad completada al curar a un superviviente, recibes una medalla, hasta un máximo de 3/4/5 Distintivos.
+
+Cada una te concede 15 % de progresión adicional para completar una prueba de habilidad al curar supervivientes.
+
+Las pruebas de habilidad excelentes no se podrán llevar a cabo si estás utilizando Autodidacta.
+
+Autodidacta no estará activa si usas un Botiquín IconItems firstAidKit para curar.
+
+"No hay limite en todo lo que puedes conseguir, siempre y cuando trabajes duro para ello". — Adam Francis
+
+Adam
+
+Ruptura	Cada vez que te liberas de un Gancho (por tus propios medios o con ayuda), el Gancho IconHelpLoading hook se rompe y se te revela el Aura IconHelp auras del Asesino durante 4/5/6 segundos.
+Un Gancho roto con esta Habilidad tarda 180 segundos en reaparecer.
+
+"'Embiste desde el vientre de la bestia'.
+Este es un boceto o dibujo en un trozo de madera que vi junto a la carretera. Sentí que tenía una historia que contar. Y no desaprovechó su segunda oportunidad". — Jeff, pintura con tinta y óleo sobre trozo de madera, 12 x 16
+
+Jeff
+
+Postratamiento	Permite percibir Auras.
+Puedes ver el Aura IconHelp auras de todos los supervivientes que:
+
+Rescates de un Gancho IconHelpLoading hook o te rescaten de un Gancho.
+Cures con una acción completa de curación o te curen con una acción completa de curación.
+Ellos también podrán ver tu Aura.
+
+Podrás ver el Aura de hasta 1/2/3 Superviviente(s). Todos los efectos de esta habilidad desaparecerán si te cuelga el asesino.
+
+"'Una piedad que desgarra la tormenta'.
+Obra al óleo en honor a mis mejores amigos, que también son los mejores músicos que conozco. Su primer álbum sigue siendo mi favorito. Me ayudó a superar una mala época de mi vida". — Jeff, óleo sobre lienzo, 16 x 16
+
+Jeff
+
+Distorsión	Inicias la partida con 3 Distintivos.
+Cuando el Asesino esté a punto de ver tu Aura IconHelp auras, Distorsión se activará y gastará uno de esos distintivos.
+
+Durante los próximos 6/8/10 segundos, mientras Distorsión esté activa, el Asesino no verá tu Aura ni dejarás Marcas de Arañazos.
+
+Distorsión no se activa si estás Agonizante IconHelp dying o en una trampa.
+Distorsión recupera un distintivo cada 30 segundos.
+Distorsión no puede tener más de 3 distintivos.
+"'Muerte engañada por el manto de plumas de halcón'.
+Boceto inspirado por varias noches de insomnio durante el invierno. Estudio de mitología nórdica: el valor puede ocultar tus defectos, incluso cuando eres más vulnerable." — Jeff, lápiz sobre cartón coloreado, 12 x 12
+
+Jeff
+
+Solidaridad	Compartir experiencias dolorosas tiene el poder de curar.
+Si te han herido, cuando curas a un Superviviente sin usar un Botiquín IconItems firstAidKit también te curas a ti a un 40/45/50 % de la velocidad normal.
+
+"Hay que estar ahí cuando las cosas se ponen difíciles, para escuchar los problemas de la gente y apoyar a quienes lo necesitan: así es como te haces más fuerte, así es como creces". — Jane Romero
+
+Jane
+
+Serenidad	Alcanzar objetivos te da confianza.
+Después de completar un Generador IconHelpLoading generators, no dejas marcas de arañazos durante 6/8/10 segundos.
+
+"Vale, tranquila. No le des más vueltas y sigue adelante: puedes hacerlo". — Jane Romero
+
+Jane
+
+De Frente	Si se te mete algo entre ceja y ceja, mejor que nadie se interponga en tu camino.
+De Frente se activa cuando te escondes en una Taquilla IconHelp lockers durante 3 segundos.
+
+Mientras De Frente esté activa, puedes realizar una acción rápida para salir de la Taquilla y usar De Frente. Si el asesino está al alcance de De Frente, queda aturdido durante 3 segundos.
+
+Causa el efecto de estado Agotamiento IconStatusEffects exhausted durante 60/50/40 segundos.
+
+No puedes usar De Frente mientras sufres Agotamiento.
+
+No te recuperas del Efecto de Estado Agotamiento IconStatusEffects exhausted mientras corres.
+
+No se puede usar De Frente cuando tienes cuervos por inactividad.
+
+"A la gente se la recuerda por los obstáculos que superan. Puedes esconderte y olvidar de lo que eres capaz, o puedes enfrentarte a tus miedos y recordarle al mundo quién eres". — Jane Romero
+
+Jane
+
+Hasta Otra	Tienes una habilidad asombrosa para escapar de lo inevitable.
+Cuando estás Agonizante IconHelp dying, un 50 % de tu progreso de recuperación se convierte en progreso de forcejeo cuando te recoge el Asesino, hasta un máximo del 40/45/50 % del total.
+
+"Ale, hasta otra". — Ash Williams
+
+Ash
+
+Sujétate	Permite percibir Auras. Es posible distinguir lo avanzada que está la recuperación de los Supervivientes Agonizantes según la intensidad de sus Auras IconHelp auras a una distancia de hasta 48 metros.
+Cuando cures a un Superviviente Agonizante IconHelp dying hasta que solo se quede Herido IconHelp injured, tanto tú como dicho Superviviente podréis ver el Aura del Asesino durante 4/5/6 segundos.
+
+"Los machacafantasmas no dejamos a nadie atrás". — Ash Williams
+
+Ash
+
+El Temple del Hombre	El mal siempre termina encontrándote.
+El Temple del Hombre se activa después de recibir 3 Golpes por proteger a Supervivientes.
+
+Una vez activada, serás invulnerable a cualquier daño recibido que te hubiera dejado Agonizante IconHelp dying cuando estés Herido IconHelp injured.
+
+La próxima vez que recuperes tu salud al completo, tu aura se le revelará al asesino si te encuentras a más de 12/14/16 metros de él.
+
+El Temple del Hombre no se desactivará hasta que vuelva a dejarte Agonizante.
+
+Aumenta tus posibilidades de ser la obsesión del Asesino.
+El Asesino no puede obsesionarse con más de un Superviviente.
+"El mal me ha puesto una diana en el culo del tamaño de un estadio de fútbol". — Ash Williams
+
+Ash
+
+Mejor Juntos	Buscas justicia y revelar la verdad sin importar los obstáculos con los que te tropieces por el camino.
+El Aura IconHelp auras del generador que se está reparando se revela a los demás Supervivientes que se encuentren en un radio de 32 metros.
+
+Si el Asesino derriba a un Superviviente mientras estás reparando un Generador IconHelpLoading generators, ves el aura de los demás Supervivientes durante 8/9/10 segundos.
+
+"Haremos que arda el laboratorio". — Nancy Wheeler
+
+Nancy
+
+Fijación	Cuando te fijas en un objetivo, no hay vuelta atrás: mejor pedir perdón que pedir permiso.
+Ves tus Marcas de Arañazos propias en todo momento.
+
+Mientras no sufras heridas, caminas un 10/15/20 % más deprisa.
+
+"Quiero terminar lo que hemos empezado. Quiero matarlo". — Nancy Wheeler
+
+Nancy
+
+Fuerza Interior	Buscas en tu interior y confías en tu instinto siempre que te embarga la desolación y pierdes el rumbo.
+Cada vez que purificas un Tótem IconHelpLoading totem, se activa Fuerza Interior. Fuerza Interior no se activa si estás sufriendo el efecto de estado Desesperanza IconStatusEffects broken.
+
+Si te han herido, si te escondes en una Taquilla IconHelp lockers durante 10/9/8 segundos mientras Fuerza Interior esté activa te recuperarás por completo.
+
+Fuerza Interior se desactiva inmediatamente después de surtir efecto.
+
+"Todo este tiempo me esforzaba por fingir que todo iba bien, pero no es así". — Nancy Wheeler
+
+Nancy
+
+Canguro	A pesar de tener la fama de persona egocéntrica, lo arriesgas todo para ayudar a quienes te necesitan.
+Cuando desenganchas a un Superviviente, este no deja marcas de arañazos ni rastros de sangre durante 4/6/8 seconds. El Asesino y tú podéis ver vuestras respectivas Auras IconHelp auras durante 4 segundos.
+
+"He prometido manteneros a salvo, y eso es lo que pienso hacer". — Steve Harrington
+
+Steve
+
+Camaradería	La vida te ha demostrado lo importante que es la amistad, que te ha dado fuerzas.
+Mientras estés en la fase de pugna, se activa Camaradería.
+
+Si otro Superviviente se encuentra dentro de un radio de 16 metros mientras Camaradería está activa, el temporizador se detiene durante 26/30/34 segundos.
+
+"Oye, recuerda: Cuando entres ahí... pasas de todo. Vas aprendiendo, colega. Vas aprendiendo". — Steve Harrington
+
+Steve
+
+Segundo Aliento	Cuando curas a otros Supervivientes el equivalente un estado de salud, se activa Segundo Aliento. Segundo Aliento no se activa si estás sufriendo el efecto de estado Desesperanza IconStatusEffects broken.
+Mientras Segundo Aliento esté activa, la próxima vez que te desenganchen o te desenganches tú por tus propios medios se te aplicará el efecto de estado Desesperanza. Después de 34/32/30 segundos, Segundo Aliento te curará por completo.
+
+Segundo Aliento se desactivará cuando te hayas recuperado del todo o si te dejan en estado Agonizante IconHelp dying antes de que Segundo Aliento llegue a activarse. Perderás el efecto de estado Desesperanza.
+
+"Ah, pues va a ser que no". — Steve Harrington
+
+Steve
+
+Golpe de Suerte	Te has llevado unos buenos rasguños y moretones, pero la suerte siempre está de tu lado.
+Golpe de Suerte se activa en cuanto te hieren. No dejas rastros de sangre durante 120/150/180 segundos.
+
+Golpe de Suerte queda desactivada de forma permanente para el resto de la partida una vez trascurrido ese tiempo.
+
+"Eso no basta para vencerme. Ni por asomo". — Yui Kimura
+
+Yui
+
+Cueste lo que Cueste	Te defiendes usando cualquier cosa que tengas a mano para sacar ventaja.
+Mantén pulsado el Botón de Habilidad Activa durante 4 segundos mientras estás junto a un Palé IconHelp pullDown derribado para volver a dejarlo en su posición original.
+
+Cueste lo que Cueste tiene un tiempo de recarga de 140/130/120 segundos.
+
+"Te golpearé con todas mis fuerzas, y luego volveré a hacerlo". — Yui Kimura
+
+Yui
+
+Fuga	Cuando alguien tiene problemas, te vienes arriba y lo animas a superar cualquier obstáculo.
+Cuando estás a menos de 6 metros de un Superviviente con el que esté cargando el Asesino, se te aplica el efecto de estado Celeridad IconStatusEffects haste, que aumenta un 5/6/7 % tu velocidad de movimiento. El Superviviente forcejea un 20 % más rápido.
+
+"Venga, vamos a salir de esta". — Yui Kimura
+
+Yui
+
+Extraoficial	Has aprendido que a veces la mejor estrategia es la discreción.
+Cuando te desenganchen o escapes del Gancho IconHelpLoading hook, Extraoficial se activa durante 60/70/80 segundos.
+
+Mientras Extraoficial siga activa, obtienes el efecto de estado Resistencia IconStatusEffects enduranceSurvivor no se mostrará tu Aura IconHelp auras al Asesino y los gruñidos de dolor causados por las heridas se reducen un 100%.
+
+"Confía en mí, investigo todo a conciencia y con discreción". — Zarina Kassir
+
+Zarina
+
+Bulo	Has descubierto que la gente siempre presta atención a lo que hace más ruido.
+Tras reparar un Generador IconHelpLoading generators durante al menos 3 segundos, se iluminará con un Aura IconHelp auras Amarilla solo visible para ti. El Generador permanecerá iluminado hasta que sea reparado por completo, repares otro generador o entres en una Taquilla IconHelp lockers.
+
+Entrar en una Taquilla activará una notificación de ruido intenso para el Asesino en la ubicación del generador iluminado.
+
+Bulo solo puede activarse una vez cada 100/80/60 segundos.
+"Las noticias dejan fuera lo dificultoso y complejo: la verdad". — Zarina Kassir
+
+Zarina
+
+Por los Demás	Te arriesgas a morir y a que te hieran por otras personas.
+Por los Demás solo está activo mientras tengas la salud al máximo.
+
+Pulsa el Botón de Habilidad Activa mientras cures a otro Superviviente sin un Botiquín IconItems firstAidKit para curarlo al momento de Agonizante IconHelp dying a Herido IconHelp injured o de Herido a Ileso IconHelp healthy.
+
+A cambio, tú te quedas herido y sufres el efecto de estado Desesperanza IconStatusEffects broken durante 110/100/90 segundos.
+
+Te conviertes en la Obsesión IconHelp obsession.
+
+Equipar esta habilidad Reduce las posibilidades que te conviertas en la Obsesión al inicio de la partida.
+
+"Podemos escribir nuestra propia historia y decidir cómo acaba de verdad". — Zarina Kassir
+
+Zarina
+
+Salvaguarda de Alma	Superar las enormes penalidades a las que te has tenido que enfrentar te ha hecho más fuerte.
+Se te aplica el estado de Resistencia IconStatusEffects enduranceSurvivor por 4/6/8 segundos después de que te curen o de haberte recuperado tras estar Agonizante IconHelp dying. Durante este tiempo, cualquier daño que te dejara agonizante te aplicará en su lugar Herida Profunda IconStatusEffects deepWound. Tendrás 20 segundos para sanarte. Si sufres algún daño mientras Herida profunda siga activa, o si el temporizador de esta se agota, entrarás de manera instantánea en estado agonizante.
+
+Mientras te afecte un Maleficio Unknown QuestionMark, puedes recuperarte por completo del estado agonizante.
+
+Cheryl
+
+Pacto de Sangre	Descripción de habilidad desconocida. Por favor, agregue la descripción en Plantilla:Perk desc	Cheryl
+
+Supresión de Alianza	Te has acostumbrado a que te persigan las fuerzas malignas y has empezado a usarlo a tu favor.
+Supresión de Alianza se activa tras reparar Generadores IconHelpLoading generators durante un total de 80/70/60 segundos.
+
+Al reparar un Generador mientras la Habilidad está activa, pulsa el Botón de la Habilidad Activa para invocar al Ente y bloquear el generador durante 30 segundos. La Habilidad se desactiva.
+
+Los Generadores afectados brillarán con un Aura Blanca que se mostrará a todos los Supervivientes.
+
+Cheryl
+
+Visión de Futuro	Tienes una facilidad innata para encontrar formas de escapar.
+Ves las Auras IconHelp auras de los Generadores IconHelpLoading generators a una distancia máxima de 32 metros.
+
+Visionario se desactiva durante 20/18/16 segundos cada vez que se completa un Generador.
+
+Felix
+
+Medidas Desesperadas	Te niegas a fracasar incluso en tus peores momentos.
+Por cada Superviviente herido, enganchado o agonizante, la velocidad de tus acciones de curación y desenganche aumenta un 10/12/14 %.
+
+"Cuando vengan con una bola de demolición, construye muros más fuertes." — Felix Richter
+
+Felix
+
+Construcción Duradera	Sabes cómo sacarles partido a tus herramientas.
+Tras ocultarte en un Casillero IconHelp lockers durante 12 segundos con un objeto desgastado en tu posesión, se rellenará con un 99% de las cargas. Cada vez que se use Construcción duradera, se reducen las cargas repuestas en un '33%.
+
+"La arquitectura es el alma de la civilización." — Felix Richter
+
+Felix
+
+Evaluación	Posees una capacidad de observación superior a la media.
+Comienzas la partida con 3 distintivos. Si ya se ha abierto un cofre, puedes gastar un distintivo para buscar un objeto en él. Solo puedes rebuscar una vez por cofre.
+
+La velocidad a la que rebuscas en los cofres aumenta un 40/60/80 %
+
+Élodie
+
+Engaño	Tu estilo de vida aventurero trae consigo momento donde deberás sacar tu lado más astuto.
+Si interactúas con un Casillero IconHelp lockers al esprintar, se activará una notificación de ruido intenso en tu ubicación y no dejarás marcas de arañazos durante los próximos 3 segundos.
+
+Ya no podrás entrar en los Casilleros al esprintar mientras la habilidad esté activa.
+
+Engaño solo puede activarse una vez cada 60/50/40 segundos
+
+Élodie
+
+Lucha Intensa	Nunca te has rendido, así que tampoco vas a hacerlo ahora.
+Cuando sufras un estado agonizante, verás las Aura IconHelp auras de los palés disponibles. Cuando un asesino te lleva, forcejea hasta alcanzar un 25/20/15 % para activar Lucha Intensa. Cuando Lucha Intensa esté activa, podrás soltar un palé fijo cercano para aturdir a un asesino.
+
+"En el pasado, confié en otras personas para que me protegieran y lo perdí todo. No volveré a cometer el mismo error. (Élodie Rakoto)
+
+Élodie
+
+Primera Línea	A veces, es necesario que otros se sacrifiquen por tu propio bien.
+Cada vez que se cuelgue a otro superviviente, obtienes 3 distintivos. Consumes todos los distintivos tras una prueba de habilidad excelente en un generador. Cada distintivo consumido obtiene una progresión adicional del 1 % con las pruebas de habilidad excelentes al reparar generadores.
+
+"Primero hay que sacrificar a los débiles. Está escrito en la naturaleza, en los negocios... Muchos se niegan a aceptar esta realidad. (Yun-Jin)
+
+Yun-Jin
+
+Éxito Aplastante	Cuando tu rival comete un error, tienes que aprovechar la oportunidad.
+Tras aturdir al asesino con un palé, esprinta con un 150 % de tu habilidad normal cuando corres durante 4 segundos. Provova el Efecto de estado Plantilla:Iconlink durante 40 segundos. Esta habilidad no se puede usar con Agotamiento
+
+"Me he enfrentado a muchos psicópatas trajeados. Tú eres igual, solo que más desagradable y con menos estilo". (Yun-Jin)
+
+Yun-Jin
+
+Autoconservación	La vida es cruel y es mejor no depender de nadie.
+Cuando otro superviviente sufra un ataque básico o especial a 16 metros de ti, se activará Autoconservación. Tus marcas de arañazos, charcos de sangre y gruñidos de dolor se ocultan durante 10 segundos.
+
+"Si he aprendido algo en esta industria, es lo siguiente: cuando el hacha empiece a oscilar, agacha la cabeza."" (Yun-Jin)
+
+Yun-Jin
+
+Contrafuerza	Sabes resistir ante un enemigo más fuerte que tú: lo principal es dar caza y acabar con sus refuerzos.
+Purifica tótems un 20 % más rápido. Tras purificar un tótem, ves el aura del tótem más lejano a ti durante 4 segundos y obtienes un 20 % de velocidad adicional acumulable para purificar tótems para el resto de la partida.
+
+"No me desagrada hacer un poco de detective" (Jill Valentine)
+
+Jill
+
+Resurgimiento	Has sobrevivido a algo que parecía imposible... y volverás a hacerlo.
+Obtienes un 50 % de progreso de curación al instante después de que alguien te desenganche o de que te desenganches por tus propios medios.
+
+"Ahora es mi turno, bicho asqueroso" (Jill Valentine)
+
+Jill
+
+Mina explosiva	Cuando el combate cuerpo a cuerpo no es una opción, siempre se te ocurre alguna alternativa.
+Mina explosiva se activa tras completar un total de 66 % como progreso de reparación de generadores. Después de reparar un generador duranmte un minimo de 3 segundos, pulsa el botón de la habilidad activa 1 para instalar una trampa que permanezca activa durante 45 segundos. Los generadores afectador se mostrarán a todos los supervivientes con un aura amarilla. Solo se puede activar una trampa en un generador.
+
+Cuando el asesino patea un generador con trampa, esta explota, aturdiendo y cegando a quienes están cerca. A continuación, Mina explosiva se desactivará
+"¡Ahora sí que vas a ver las estrellas!" (Jill Valentine)
+
+Jill
+
+De Tripas Corazón	Sientes el dolor igual que el resto, pero no quieres que nadie se entere.
+Ni el superviviente que estés curando ni tú emitís ningún sonido, ni un gruñido. No hay notificación de ruido en las pruebas de habilidad de curación fallidas y la curación se revierte solo un 1 %
+
+"Puedo hacerlo" (Leon S. Kennedy)
+
+Leon
+
+Granada Aturdidora	Te has adaptado a un mundo sumido en el caos.
+Tras completar un 50 % de progueso con cualquier generador, se activa Granada Aturdidora. Entra en una taquilla sin llevar nada y punsa el botón de la habilidad activa 1 para fabricar una granada.
+
+1 carga
+Explota con un ruido y luz intensos.
+Crea una notificación de ruido.
+Puede usarse para distraer o cegar
+La granada se queda atrás cuando escapas de la partida.
+
+"¡Largo de aquí!" (Leon S. Kennedy)
+
+Leon
+
+Espíritu de Novato	Prestas mucha atención a los objetivos cuando se escapan.
+Completa 3 pruebas de habilidad superadas o excelentes mientras reparas generadores para activar Espíritu de novato para el resto de la partida. Cuando se active, podrás ver el aura de los generadores revertidos.
+
+"Pondré fin a esto, teniente. Se lo prometo" (Leon S. Kennedy)
+
+Leon
+
+Clarividencia	Hay una energía intrínseca en tu interior que percibe más allá de tu visión.
+Clarividencia se activa cuando purificas un tótem.
+
+Cuando tengas las manos vacías, mantén pulsado el Botón de la habilidad para desatar todo tu potencial para percibir Auras IconHelp auras. Durante un máximo de 10 segundos, podrás ver las auras de los interruptores de las puertas de salida, los generadores, los ganchos , los cofres y la trampilla a una distancia de 64 metros.
+
+"¿Soy la única que lo ve? ¿De verdad?" (Mikaela Reid)
+
+Mikaela
+
+Bendición: Círculo de Curación	Una bendición que reconforta en medio de todo el horror.
+Mantén pulsado el botón de la habilidad cerca de un tótem de maleficio o apagado para bendecirlo y crear un tótem benefactor. Se escucha la melodía del carillón a una distancia de 24 metros.
+
+Todos los supervivientes en el rango de alcance del tótem benefactor adquieren un 50 % de velocidad de curación adicional y pueden curarse sin un botiquín. Autocuración se realiza a un 50 % de la velocidad normal.
+
+Solo puedes bendecir un tótem cada vez. Todas las habilidades de bendición estarán activas en el tótem benefactor.
+
+"Prueba esto; es mejor que cualquier porquería que venden en las farmacias." (Mikaela Reid)
+
+Mikaela
+
+Bendición: Paso Sombrío	Una bendición que oculta la verdad.
+Mantén pulsado el botón de la habilidad cerca de un tótem de maleficio o apagado para bendecirlo y crear un tótem benefactor. Se escucha la melodía del carillón a una distancia de 24 metros.
+
+Todos los supervivientes en el rango de alcance del tótem benefactor podrán ocultarle al asesino sus marcas de arañazos y auras. Este efecto dura 4 segundos tras alejarse del tótem benefactor.
+
+Solo puedes bendecir un tótem cada vez. Todas las habilidades de bendición estarán activas en el tótem benefactor.
+
+"Quédate en las sombras y no dejes ningún rastro." (Mikaela Reid)
+
+Mikaela
+
+Sobreponerse	Has calculado cuanta energía puedes arriesgarte a emplear.
+Cuando sufres heridas, mantienes la bonificación de velocidad de movimiento 2 segundos mas.
+
+Sobreponerse provoca el efecto de estado Agotamiento IconStatusEffects exhausted durante {{{1}}}/{{{2}}}/{{{3}}}
+
+"Tras mucho meditar, ¡nos vamos cagando hostias de aquí!. (Jonah Vasquez)
+
+Jonah
+
+Medida Correctiva	Analizas los problemas rápido y corriges el trabajo de los demás cuando cometen un error.
+Empiezas la partida con 3 distintivo(s) y obtienes uno por cada prueba de habilidad excelente hasta un máximo de 5.
+
+Cuando un superviviente falla una prueba de habilidad normal mientras coopera contigo, se consume un distintivo y su prueba de habilidad fallida se vuelve una prueba de habilidad superada.
+
+"Nunca está de más otro par de ojos." (Jonah Vasquez)
+
+Jonah
+
+Bendición: Exponencial	Cuando parece que ha llegado tu hora, buscas formas de aumentar tus posibilidades.
+Mantén pulsado el botón de la habilidad cerca de un tótem de maleficio o apagado para bendecirlo y crear un tótem benefactor. Se escucha la melodía del carillón a una distancia de 24 metros.
+
+Todos los supervivientes en el rango de alcance del tótem benefactor se recuperan un 100 % mas rápido y se curan por completo del estado agonizante.
+
+Solo puedes bendecir un tótem cada vez. Todas las habilidades de bendición estarán activas en el tótem benefactor.
+
+"No vamos a morir aún..., digo yo, vaya." (Jonah Vasquez)
+
+Jonah
+
+Consejo Paterno	Has heredado el don de escuchar a los muertos, y ahora los muertos te advierten del peligro.
+Tras aturdir al asesino del modo que sea, tus marcas de arañazos, charcos de sangre y gruñidos de dolor se camuflarán durante 7 segundos.
+
+Yoichi
+
+Conexión Empatica	Tu presencia se proyecta psíquicamente hacia quienes están en peligro.
+Cada vez que otro superviviente esté herido, podrá ver tu aura a una distancia de 96 metros.
+
+Curas a otros supervivientes un 10 % más rápido.
+
+Yoichi
+
+Bendición: Teoría Oscura	Tu concienzudo estudio de lo paranormal te confiere un conocimiento único de los otros reinos y planos existenciales.
+Mantén pulsado el botón de la habilidad cerca de un tótem de maleficio o apagado para bendecirlo y crear un tótem benefactor. Se escucha la melodía del carillón a una distancia de 24 metros.
+
+Todos los supervivientes en el rango de alcance del tótem benefactor obtienen un 2 % del efecto de estado Plantilla:Iconlink. Este efecto dura 4 segundos tras alejarse del tótem benefactor.
+
+Solo puedes bendecir un tótem cada vez. Todas las habilidades de bendición estarán activas en el tótem benefactor.
+
+Yoichi
+
+Concentración Interna	Has perfeccionado tu capacidad de ver en la neblina de la Devastación.
+Puedes ver las marcas de arañazos de otros supervivientes.
+
+Si otro superviviente pierde un estado de salud a 32 metros de distancia de ti, se te mostrará el aura del asesino durante 5 segundos.
+
+"La muerte, los traumas, el miedo... Todo termina aquí, en la interferencia." (Haddie Kaur)
+
+Haddie
+
+Manifestación Residual	Toda una vida persiguiendo la oscuridad te ha enseñado que el mejor desinfectante es la luz.
+Si consigues aplicar Ceguera IconStatusEffects vision al asesino, este sufrirá el efecto de estado ceguera durante 30 segundos.
+
+Esta habilidad te permite inspeccionar un cofre abierto en cada partida y recibirás una linterna básica.
+
+"Jamás veré lo que ve Haddie, pero no me importa. Mientras esté con ella, se que estoy a salvo." (Jordan Rois, Devastadores del Abismo, episodio 5)
+
+Haddie
+
+Pasión	Plantarle cara a la Devastación te motiva y te inspira.
+Esta habilidad se activa tras purificar un tótem.
+
+Tu velocidad de reparación de generadores aumenta un 8 %. Esta bonificación se duplica si purificas un tótem de maleficio.
+
+Esta habilidad se desactiva cuando pierdas un estado de salud del modo que sea.
+
+"La Devastación, puede sentirnos. Hay que darse prisa." (Haddie Kaur)
+
+Haddie
+
+Sistema de Espionaje	La mejor forma de permanecer un paso adelante es observar cuidadosamente a la competencia.
+Sistema de Espionaje se activa después de completar un total de 50% de progreso de reparación en los Generadores IconHelpLoading generators.
+
+Al pararte junto a un Generador, presiona el botón de la habilidad activa 1 para instalar un sistema de espionaje que permanece activo durante 100 segundos.
+
+El Aura IconHelp auras de los generadores afectados se revelará a todos los sobrevivientes con un aura amarilla. Solo se puede activar un Sistema de Espionaje en un generador.
+
+Cuando un Asesino ingresa dentro de los 14 metros del generador, su aura se revela a todos los sobrevivientes.
+Sistema de Espionaje se desactiva cuando el asesino daña el generador o cuando el tiempo se acaba.
+Ada
+
+Curación Reactiva	Cuando la situación se vuelve más arriesgada, aumenta tu determinación para completar la operación.
+Cuando otro u otra Sobreviviente IconHelpLoading survivor pierde Estado de Salud IconStatusEffects healing en un radio de 32 metros alrededor de ti y tienes heridas, tu progreso de curación aumenta de inmediato en un 40/45/50% de la progresión de curación faltante.
+
+Ada
+
+Perfil Bajo	Trabajas mejor sin compañía. Cuando solo estás tú y quien te persigue, sabes cómo desaparecer.
+Cuando te conviertes en la última persona sobreviviente en pie, esta ventaja se activa.
+
+Oculta tus Marcas de Arañazos IconHelp scratchMarks, Charcos de Sangre IconStatusEffects bleeding y Gruñidos de Dolor causados por heridas durante 70/80/90 segundos.
+Ada
+
+Mejor que Nuevo	Tu fuerte es la medicina de combate. Los pacientes salen revitalizados de tu tratamiento.
+Tras completar una acción de curación sobre otro u otra Sobreviviente IconHelpLoading survivor, éste o ésta obtiene un aumento del 12/14/16% de velocidad para reparar Generadores IconHelpLoading generators, Curar, abrir Cofres IconHelp chests y purificar y bendecir Tótems IconHelpLoading totem.
+Los sobrevivientes mantienen la bonificación hasta que pierden un estado de salud.
+
+Rebecca
+
+Consuelo	Tu presencia le ayuda a tus aliados a concentrarse, lo que alivia el pánico asociado a las condiciones extremas.
+Al estar dentro de un radio de 6 metros alrededor de un Sobreviviente IconHelpLoading survivor colgado, usa el botón de la habilidad activa 2 para detener la progresión de su forcejeo por 20/25/30 segundos.
+Si están en la fase de forcejeo, también pausa las pruebas de habilidad de forcejeo.
+Consuelo solo se puede activar una vez por sobreviviente y una vez por instancia de gancho.
+
+Rebecca
+
+Hiperconcentración	Te abocaste por completo a tus tareas y encontraste la forma de ser más eficiente que todos los demás.
+Después de alcanzar una prueba de habilidad excelente al reparar o curar, esta ventaja otorga 1 distintivo, hasta un máximo de 6 distintivos.
+
+Por cada distintivo:
+
+Aumenta las probabilidades de que se active una prueba de habilidad en un 4%.
+Aumenta la velocidad del cursor de la prueba de habilidad en un 4%.
+Aumenta el progreso adicional de una prueba de habilidad excelente en un 10%/20%/30%.
+La ventaja pierde todos sus distintivos en el caso de una prueba de habilidad normal exitosa, una falla en la prueba de habilidad, o si la acción se detiene del modo que sea.
+
+Rebecca
+
+Energía Potencial	Tus habilidades arcanas se adaptaron al reino del Ente tras siglos de deambular, y te otorgan un control sin precedentes sobre sus diversos recursos.
+Tras reparar un Generador IconHelpLoading generators durante 12/10/8 segundos sin interrupción, presiona el botón de habilidad activa 2 para activar esta ventaja. Cuando esta ventaja está activa, reparar el generador cargará a esta ventaja en lugar de hacer que el generador progrese. Por cada 1,5% de reparación del generador, la ventaja obtendrá 1 distintivo, hasta un máximo de 20 distintivos.
+
+Mientras esta ventaja tenga al menos un distintivo y estés reparando un generador, puedes presionar el botón de la habilidad activa 2 para consumir todos los distintivos y hacer que el generador progrese al instante 1% por cada distintivo. Esta ventaja se desactiva tras hacerlo.
+Si pierdes un estado de salud mientras esta ventaja tenga al menos 1 distintivo, la ventaja perderá todos los distintivos y se desactivará. Si fallas una prueba de habilidad, también perderás algunos distintivos.
+
+
+"Cuando miras con más profundidad te das cuenta... de que todo está conectado". (Vittorio Toscano)
+
+Vittorio
+
+Conocimiento de la Niebla	Has visto de todo en tus largos años en la Niebla y, cuando te concentras, puedes recordarlo casi todo.
+Después de obtener una Prueba de Habilidad IconHelp skillChecksexcelente al reparar un Generador IconHelpLoading generators, se revela el Aura IconHelp aurasdel asesino o asesina por 4/5/6 segundos.
+"He visto una enorme crueldad... y también he visto otro camino". (Vittorio Toscano)
+
+Vittorio
+
+Táctica Rápida	Cuando captas la atención de un asesino, sabes mantenerla; los demás pueden estar tranquilos de que no los interrumpirán por un tiempo.
+Cuando el asesino te persigue, ves el Aura IconHelp aurasde los Generadores IconHelpLoading generatorsa 36 metros de distancia.
+Los sobrevivientes que estén reparando los generadores resaltados reciben un 6/7/8% de aumento de velocidad para reparar.
+"No es necesario recurrir a la violencia. Y yo lo probaré". (Vittorio Toscano)
+
+Vittorio
+
+Suéltate	Te metes en suficientes problemas. Sabes cómo salir de ellos.
+Esta ventaja se activa luego de realizar un salto apresurado en una persecución.
+
+Mientras esta ventaja esté activa, tus saltos apresurados se silencian durante 4/5/6 segundos y lograr con éxito un salto apresurado durante ese tiempo reinicia el temporizador.
+Esta ventaja tiene un tiempo de recuperación de 45 segundos.
+
+"Sé cómo podemos salir de aquí. Rápido, por aquí". (Thalita Lyra)
+
+Thalita
+
+Competencia Amistosa	Disfrutas del espíritu comunitario de una competencia e inspiras a otros a que hagan lo mismo.
+Esta ventaja se activa cada vez que terminas de reparar un Generador IconHelpLoading generatorscon al menos un o una sobreviviente más.
+
+Tú y otros sobrevivientes que terminen de reparar el generador contigo reciben un aumento del 5% por 45/60/75 segundos en la velocidad de progreso de reparación.
+Los sobrevivientes solo pueden tener activa una instancia a la vez de la habilidad de esta ventaja.
+
+"Vamos, terminemos con esto". (Thalita Lyra)
+
+Thalita
+
+Trabajo en Equipo: El Poder de Dos	Cuesta mantener tu ritmo, pero eso no detiene a los demás que lo intenten.
+Cada vez que termines de curar a otro u otra sobreviviente, ambos se moverán un 5% más rápido siempre y cuando estés a 12 metros de quien curaste o hasta que alguien pierda un estado de salud.
+
+Trabajo en equipo: el poder de dos solo puede activarse una vez cada 180/160/140 segundos.
+Los sobrevivientes solo pueden recibir el efecto de Trabajo en equipo: el poder de dos a la vez.
+
+"¿Estás bien? Entonces, sígueme." (Thalita Lyra)
+
+Thalita
+
+Personaje Secundario	Por lo general, no eres el centro de atención. En algunos casos, esto puede ser una ventaja.
+Cuando el asesino o asesina atrapa a otro u otra sobreviviente, Personaje secundario se activa durante 10 segundos.
+
+Cuando comienzas a correr, aceleras a un 200% de tu velocidad normal de carrera durante 5 segundos.
+Esta ventaja no se puede usar bajo los efectos de Agotado.
+
+Esta ventaja causa el efecto de estado Agotado IconStatusEffects exhausted durante 40 segundos.
+
+Agotado evita que los sobrevivientes activen ventajas agotadoras.
+
+"¿Te olvidaste de mí?". (Renato Lyra)
+
+Renato
+
+Impulso Sangriento	Tu mente y tu cuerpo se han perfeccionado para lograr grandes proezas y te permitirán tomar impuso con un esfuerzo extra cuando sea necesario.
+Esta ventaja se activa cuando estés a un gancho de morir al instante.
+
+Cuando no tengas heridas, corras y sufras del estado Agotado IconStatusEffects exhausted, presiona el botón de habilidad activa 1 para perder un estado de salud y recuperarte del estado Agotado de forma instantánea, esto te dará el efecto de estado Desesperanza IconStatusEffects broken durante 28/24/20 segundos.
+Luego de 20 segundos te curarás de forma automática y pasarás del estado herido a ileso. Sufrir el estado Agonizante IconHelp dyingcancela el efecto de curación.
+Activar impulso sangriento lo desactivará por el resto de la partida.
+
+Agotado evita que los sobrevivientes activen otras ventajas que causen este efecto.
+
+Desesperanza evita que los sobrevivientes puedan curarse.
+
+"Solo debo... tomar impulso". (Renato Lyra)
+
+Renato
+
+Trabajo en Equipo: Sigilo Colectivo	Cuando alguien te ayuda, le devuelves el favor.
+Cuando un o una sobreviviente te termina de curar, no dejarán Marcas de Arañazos IconHelp scratchMarks siempre y cuando alguien esté a 12 metros de quien te curó o hasta que alguien pierda un estado de salud.
+
+Trabajo en equipo: Sigilo colectivo solo puede activarse una vez cada 140 segundos.
+
+Trabajo en equipo: sigilo colectivo tiene un tiempo de recuperación de 180/160/140 segundos.
+Los sobrevivientes solo pueden recibir un efecto de Trabajo en equipo: sigilo colectivo a la vez.
+
+"¿Estás bien? Entonces, sígueme." (Thalita Lyra)
+
+Renato
+
+Solucionador de Problemas	Ninguna distracción te desviará de tu objetivo primario.
+Cuando te persigue el asesino, se activa Solucionador de problemas.
+
+Ves el Aura IconHelp aurasdel Generador IconHelpLoading generatorscon el mayor progreso de reparación.
+Ves el aura del asesino durante 4/5/6 segundos luego de hacer caer una tarima.
+El efecto dura 10 segundos tras entrar en persecución y luego se desactiva.
+
+"Si yo no hago las cosas por aquí, nadie las hace". (Gabriel Soma)
+
+Gabriel
+
+Nacido para Esto	Naciste para sobrevivir y creciste para adaptarte.
+Naciste para esto se activa cuando te hieren.
+
+Al terminar de curar a otro u otra sobreviviente, obtienes el efecto de estado Resistencia IconStatusEffects enduranceSurvivor durante 6/8/10 segundos.
+Mientras estés bajo el efecto de Herida profunda Unknown QuestionMark, corres un 1/2/3 % más rápido.
+Resistencia evita que derriben a un o una sobreviviente, y en su lugar sufrirá Herida profunda.
+
+Herida profunda causará el estado agonizante a un o una sobreviviente a menos que se cure antes de que el temporizador se acabe.
+
+"No vine hasta aquí para ser bocadillo de robot". (Gabriel Soma)
+
+Gabriel
+
+Chatarrero	Donde otros ven basura, tú ves herramientas improvisadas de valor.
+Al sostener una caja de herramientas vacía, se activa Chatarrero.
+
+Al realizar con éxito una prueba de habilidad excelente obtienes entre 1 y 5 distintivos.
+Al alcanzar el máximo de distintivos, los pierdes todos y la caja de herramientas se recarga automáticamente al máximo. Luego, la velocidad con la que reparas generados es un 50% más lento durante 40/35/30 segundos.
+Esta ventaja otorga la habilidad de hurgar en un cofre abierto una vez por partida y te garantiza una caja de herramientas básica.
+
+"Es increíble las coas aque la gente de por aquí desecha". (Gabriel Soma)
+
+Gabriel
+
+Dramaturgia	Cuando la gente te incluye en su proyecto, lo hacen por la magia inesperada que le aportas a tu actuación.
+Dramaturgia se activa cuando estás ileso o ilesa.
+
+Al correr, presiona el botón de habilidad activa 2 para correr elevando las rodillas durante 0,5 segundos y luego, obtén 25% de bonificación en Celeridad durante 2 segundos, seguido por un efecto desconocido:
+
+Quedas Expuesto IconStatusEffects exposeddurante 12 segundos;
+Obtienes un 25% de Celeridad durante 2 segundos;
+Gritas, pero no pasa nada;
+Obtén un objeto raro aleatorio, con complementos aleatorios, y soltarás cualquier objeto que tengas en la mano.
+El mismo efecto no puede ocurrir dos veces seguidas.
+
+Dramaturgia genera el efecto de estado Agotado IconStatusEffects exhausteddurante 60/50/40 segundos. No se puede usar si tienes el efecto de estado Agotado.
+
+Los sobrevivientes expuestos serán derribados por ataques básicos incluso si no están heridos.
+
+Celeridad aumenta la velocidad de movimento del o de la sobreviviente.
+
+Agotado evita que los sobrevivientes activen otras ventajas que causen este efecto.
+
+"Acepta el papel. Dice que es una buena película. ¿Qué es lo peor que puede suceder?". (Nicolas Cage)
+
+Nicolas
+
+Compañero de Escena	Te encierras con tu coprotagonista, interactuando entre sí en un nivel superior.
+Compa de escena se activa cuando estás dentro del Radio de Terror IconHelp terrorRadius del asesino.
+
+Cuando miras en dirección al asesino, gritarás y verás su Aura IconHelp aurasdurante 3/4/5 segundos.
+Hay una gran posibilidad de que vuelvas a gritar y, si eso sucede, verás el aura del asesino durante 2 segundos más.
+Compa de escena tiene un tiempo de recuperación de 60 segundos.
+
+"¡Esto no estaba en el guion!". (Nicolas Cage)
+
+Nicolas
+
+Giro Argumental	Los grandes momentos son importantes, pero sabes que, a veces, una lectura sencilla puede ser igual de poderosa.
+Giro Argumental se activa cuando te hieren.
+
+Presiona el botón de la habilidad 2 mientras estés en cuclillas y sin moverte para ingresar en silencio al estado Agonizante IconHelp dying.
+Al usar Giro Argumental para ingresar al estado agonizante: no dejas Charcos de Sangre IconStatusEffects bleeding y no haces ruido, y puedes recuperarte por completo del estado agonizante.
+Al recuperarte con Giro argumental, te curas al instante y obtienes 50% de Celeridad durante 2/3/4 segundos.
+Esta ventaja se desactiva si te recuperas por tu cuenta del modo que sea.
+
+Esta ventaja se vuelve a reactivar cuando se activan las puertas de salida.
+
+Celeridad aumenta la velocidad de movimiento del sobreviviente.
+
+"Creo que este lugar de rodaje te resultará... fascinante". (Pauline Stamper)
+
+Nicolas
+
+Trampa Química	Cuando la gente te incluye en su proyecto, lo hacen por la magia inesperada que le aportas a tu actuación.
+Dramaturgia se activa cuando estás ileso o ilesa.
+
+Al correr, presiona el botón de habilidad activa 2 para correr elevando las rodillas durante 0,5 segundos y luego, obtén 25% de bonificación en Celeridad durante 2 segundos, seguido por un efecto desconocido:
+
+Quedas Expuesto IconStatusEffects exposeddurante 12 segundos;
+Obtienes un 25% de Celeridad durante 2 segundos;
+Gritas, pero no pasa nada;
+Obtén un objeto raro aleatorio, con complementos aleatorios, y soltarás cualquier objeto que tengas en la mano.
+El mismo efecto no puede ocurrir dos veces seguidas.
+
+Dramaturgia genera el efecto de estado Agotado IconStatusEffects exhausteddurante 60/50/40 segundos. No se puede usar si tienes el efecto de estado Agotado.
+
+Los sobrevivientes expuestos serán derribados por ataques básicos incluso si no están heridos.
+
+Celeridad aumenta la velocidad de movimento del o de la sobreviviente.
+
+Agotado evita que los sobrevivientes activen otras ventajas que causen este efecto.
+
+"Acepta el papel. Dice que es una buena película. ¿Qué es lo peor que puede suceder?". (Nicolas Cage)
+
+Ripley
+
+Ágil	Toparte con asesiones letales te enseñó el valor de la discreción.
+Mientras estés ileso, Ágil se activa:
+
+Silencia el sonido de tus pisadas cuando corres.
+Ágil tiene un tiempo de recuperación de 28/24/20 segundos después de ejecutar una acción rápida.
+
+"Ven, Jonesy". (Ellen Ripley)
+
+Ripley
+
+Estrella de la Suerte	Sabes cómo mantener la calma frente al incomprensible peligro.
+Mientras te escondes dentro de un Casillero, Estrella de la Suerte se activa: Suprime tus Gruñidos de Dolor y la creación de Charcos de Sangre por 10 segundos.
+Al salir del Casillero, tienes los siguientes beneficios por 10 segundos:
+
+Las Auras de los otros Supervivientes se revelan para ti.
+El Aura del Generador más cercano a ti se te revela en amarillo.
+Estrella de la Suerte tiene un tiempo de recuperación de 40/35/30 segundos.
+
+"Eres mi... estrella de la suerte...". (Ellen Ripley)
+
+Ripley
+
+Campeón de la Luz	La luz de la linterna se ve algo diferente. Se siente un poco más cálida
+Cuando enciendes una linterna, obtienes un 50% de Celeridad IconStatusEffects haste
+
+Cuando logras cegar al asesino, este también recibe un 20% de Entorpecimiento IconStatusEffects hindereddurante 6 segundos. Este efecto no se puede acumular.
+Luego, esta ventaja tiene un tiempo de recuperación de 60 segundos.
+
+Celeridad aumenta la velocidad de movimiento de los sobrevivientes.
+
+Entorpecimiento reduce la velocidad de movimiento del asesino.
+
+"Me así a la linterna como si mi vida dependiera de ella, para evitar que se acercara aún más". (Departure).
+
+Alan
+
+Bendición: Iluminación	Tu sagaz perspicacia es algo que debe compartirse con los demás.
+Mantén presionado el botón de habilidad 1 cerca de un Tótem IconHelpLoading totemapagado o de maleficio para bendecirlo y crear un tótem de bendición. Suaves campanadas resuenan a una distancia de 24 metros.
+
+Los sobrevivientes dentro del alcance del tótem de bendición ven las Auras IconHelp aurasde todos los Cofres IconHelp chestsy todos los Generadores IconHelpLoading generatorsen color azul.
+Si hay un tótem de bendición encendido, purificas o bendices tótems un 6/8/10% más rápido.
+
+Solo puedes bendecir un tótem a la vez. Todas las ventas de bendición equipadas se encuentran activas en tu tótem de bendición.
+
+"Un giro en la realidad. Cargado de significados ocultos". (Return)
+
+Alan
+
+Fecha Límite	La desesperación se apodera de ti y te obligas a esforzarte más.
+Esta ventaja se activa cuando estás Herido IconHelp injured.
+
+Las pruebas de habilidad aparecen un 6/8/10% con mayor frecuencia cuando reparas o curas y aparecen en lugares al azar.
+La penalización por fallar pruebas de habilidad se reduce en un 50%.
+
+"La noche trajo una sucesión de situaciones desesperadas". (Partida)
+
+Alan
+
+Invocación: Arañas Tejedoras	El lugar donde se acaba el miedo y comienza el terror es también allí donde quienes tienen el don pueden atravesar el velo.
+Cuando llegues al Sótano IconHelp basementcerca del círculo, presiona el botón de habilidad 1 para comenzar la invocación.
+
+Las invocaciones duran 120 segundos
+
+Otros sobrevivientes ven tu Aura IconHelp aurasdurante este tiempo y pueden sumarse a una interacción en marcha, lo que aumenta la velocidad de cada uno en 50 segundos. Si tienen una ventaja de invocación equipada, la aumentarán un 100%.
+
+Cuando la invocación se completa:
+
+Obtienes el estado del efecto Expuesto por el resto de la partida.
+Todos los sobrevivientes obtienen permanentemente un 8/9/10% de la velocidad de progreso de reparación.
+Completar la invocación desactiva esa ventaja para todos los sobrevivientes.
+
+Los sobrevivientes expuestos serán derribados por ataques básicos incluso si no están heridos.
+
+"Invoco a los espíritus de la noche para que nos ayuden en nuestra huida desesperada". (Sable)
+
+Sable
+
+Fuerza de las Sombras	Una oportunidad de renovar el poder allí donde habita el peligro.
+Desbloquea la habilidad Fortaleza en las sombras, que te permite curarte sin botiquín a un 70%, de la velocidad normal de curación.
+
+Cuando terminas una curación en el Sótano IconHelp basement, verás el aura del asesino durante 10 segundos.
+"Me largaré de aquí, aunque sea lo último que haga". (Sable).
+
+Sable
+
+Malicia (Sable)	Pueden intentar lastimarte. Pero no te derribarán fácilmente.
+Esta ventaja comienza con 1 distintivo, hasta un máximo de 20.
+
+Por cada distintivo, te recuperas del efecto de estado Destrozado un 16/18/20% más rápido.
+Por cada 2 segundos que pases en el sótano, obtienes 1 distintivo.
+Mientras te afecte el efecto de estado Maldición, tus reparaciones serán un 3% más rápidas.
+Destrozado aumenta el tiempo necesario para curar en 25% y dura un tiempo definido o hasta que se curen por completo.
+
+"Nunca dejé que nadie se interponga en mi camino. ¿Crees que voy a empezar ahora?". (Sable)
+
+Sable
+
+Ilusión Reflejada	Un hechizo familiar que resulta desconocido en este entorno corrupto.
+Esta ventaja se activa cuando terminas de reparar un generador.
+
+Presiona el botón de habilidad 2 cuando estés junto a un Generador IconHelpLoading generators, Tótem IconHelpLoading totem, Cofre IconHelp chestso Puerta de Salida IconHelp exitGates para generar una ilusión estática que dura 100/110/120 segundos.
+Luego, la ventaja se desactiva.
+
+"Quédate... justo ahí... ¡perfecto!" (Baermar)
+
+Compañía
+
+Inspiración Bárdica	Es momento de darle a tu público un espectáculo. ¿Tendrás éxito o fracasarás al más mínimo obstáculo?
+Presiona el botón de habilidad 1 mientras estás de pie y sin moverte para iniciar la interacción de actuación que dura hasta 15 segundos y potencia a los sobrevivientes en un radio de 16 metros. Lanza un d20. Este efecto perdura durante 90 segundos una vez finalizada la actuación.
+
+1: Gritas, pero no pasa nada
+2-10: Las Pruebas de Habilidad IconHelp skillChecks dan +1% de progreso
+11-19: Las pruebas de habilidad dan +2% de progreso
+20: Las pruebas de habilidad dan +3% de progreso
+Cuando fallas una prueba de habilidad, se cancela la habilidad o se completa la actuación, ésta entra en tiempo de recuperación durante 110/100/90 segundos.
+
+"¡Escucha con atención! ¡Estoy a punto de salvarte la vida!" (Aestri)
+
+Compañía
+
+Mirada Fija	Una mente lúcida y un carácter sereno siempre encontrarán el medio para escapar.
+Esta ventaja se activa al permanecer inmóvil durante 6/5/4 segundos.
+
+Puedes ver el aura Aura IconHelp auras del Asesino, así como todos los Generadores IconHelpLoading generators y Cofres IconHelp chests en un radio de 24 metros.
+Este efecto dura 2 segundos luego de que te empiezas a mover.
+"Inhala. Exhala. Ahora, abre los ojos". (Baermar)
