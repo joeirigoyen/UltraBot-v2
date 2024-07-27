@@ -35,10 +35,18 @@ class PerkTracker:
         # Set perk tracking variables
         self.__tracker = {}
         self.__lastRoll = []
+        self.__lastBuildId = None
         self.__lastMessage = None
         # Set black list
         self.__blacklistPath = os.path.join(self.__configDir, 'dbdblacklist.json')
         self.__blacklist = self.mLoadBlackList()
+
+    def mSetLastBuildId(self, aBuildId: int) -> None:
+        self.__lastBuildId = aBuildId
+        mLogInfo(f'Last build id set for user {self.__userId}: {aBuildId}')
+
+    def mGetLastBuildId(self) -> int:
+        return self.__lastBuildId
 
     def mUpdateTracker(self, aPerkId: str) -> None:
         # Check if perk is in tracker

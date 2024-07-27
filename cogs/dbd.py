@@ -4,6 +4,7 @@ from discord.ext import commands
 
 # Custom imports
 from entities.handlers import dbd
+from entities.handlers.buttons import ResultsButtons
 from entities.utils.rare import mCheckIntOrStr, mFindMostSimilarPartial, mListMostSimilarPartial, mBuildEnlistedMessage
 from log.logger import mLogInfo, mLogError
 
@@ -38,9 +39,17 @@ class Dbd(commands.Cog, name='dbd'):
         mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
         # Create a handler for current user
         _perks, _collage = self.__handler.mGetRandomBuild(aCtx)
+        # Check if there is any build message
+        _lastBuildId = self.__handler.mGetLastBuildId(aCtx)
+        if _lastBuildId:
+            _channel = aCtx.channel
+            _message = await _channel.fetch_message(_lastBuildId)
+            await _message.delete()
         # Send message
+        await aCtx.response.defer()
         _formattedPerks = "  |  ".join(_perks)
-        await aCtx.response.send_message(f'{_formattedPerks}', file=_collage)
+        _response = await aCtx.followup.send(f'{_formattedPerks}', file=_collage, view=ResultsButtons(self.__handler, aCtx))
+        self.__handler.mSetLastBuildId(aCtx, _response.id)
 
     @app_commands.command(name='dbdretry', description='Reruns previous roulette only at a specified index.')
     @app_commands.describe(index='The index of the roulette where the perk to rerun is.')
@@ -58,8 +67,16 @@ class Dbd(commands.Cog, name='dbd'):
         try:
             _perks, _collage = self.__handler.mReplacePerk(aCtx, int(index) - 1)
             _msg = "  |  ".join(_perks)
+            # Check if there is any build message
+            _lastBuildId = self.__handler.mGetLastBuildId(aCtx)
+            if _lastBuildId:
+                _channel = aCtx.channel
+                _message = await _channel.fetch_message(_lastBuildId)
+                await _message.delete()
             # Send message
-            await aCtx.response.send_message(_msg, file=_collage)
+            _response = await aCtx.response.send_message(_msg, file=_collage, view=ResultsButtons(self.__handler, aCtx))
+            _message = await _response.original_message()
+            self.__handler.mSetLastBuildId(aCtx, _message.id)
         except (ValueError, IndexError) as e:
             mLogError(e)
             await aCtx.response.send_message(f'No perks to retry at index {index}')
@@ -90,8 +107,16 @@ class Dbd(commands.Cog, name='dbd'):
         try:
             _perks, _collage = self.__handler.mReplacePerk(aCtx, int(index) - 1)
             _msg = "  |  ".join(_perks)
+            # Check if there is any build message
+            _lastBuildId = self.__handler.mGetLastBuildId(aCtx)
+            if _lastBuildId:
+                _channel = aCtx.channel
+                _message = await _channel.fetch_message(_lastBuildId)
+                await _message.delete()
             # Send message
-            await aCtx.response.send_message(_msg, file=_collage)
+            _response = await aCtx.response.send_message(_msg, file=_collage, view=ResultsButtons(self.__handler, aCtx))
+            _message = await _response.original_message()
+            self.__handler.mSetLastBuildId(aCtx, _message.id)
         except (ValueError, IndexError) as e:
             mLogError(e)
             await aCtx.response.send_message(f'No perks to blacklist at index {index}')
@@ -341,11 +366,10 @@ class Dbd(commands.Cog, name='dbd'):
         _nameStr = "  |  ".join(_names)
 
         # Send message
-        await aCtx.response.send_message(f'--- ***Custom build set*** ---\n{_nameStr}', file=_collage)
+        await aCtx.response.send_message(f'--- ***Custom build set*** ---\n{_nameStr}', file=_collage, view=ResultsButtons(self.__handler))
 
     @app_commands.command(name='dbdmyusage', description='Resets your custom build.')
-    @app_commands.describe(perk='(optional) The name of the perk you want to visualize.')
-    async def mShowUserUsageGraph(self, aCtx: Interaction, perk: str):
+    async def mShowUserUsageGraph(self, aCtx: Interaction):
         """
         This method shows the user's perk/results graph.
 
@@ -354,31 +378,13 @@ class Dbd(commands.Cog, name='dbd'):
         """
         # Log command call
         mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
-        # Get most similar perk or the same perk that was requested
-        _allPerks = self.__handler.mGetAllPerkNames(aCtx)
-        if perk:
-            perk = mFindMostSimilarPartial(perk, _allPerks)
-            mLogInfo(f'Most similar perk: {perk}')
         # Get user graph
-        _graph = self.__handler.mGetUsageGraph(aCtx, aUser=aCtx.user.id, aPerk=perk)
+        _graph = self.__handler.mGetUsageGraph(aCtx, aUser=True)
         # Send message
         await aCtx.response.send_message(file=_graph)
-
-    @mShowUserUsageGraph.autocomplete("perk")
-    async def mShowUserUsageAutoComplete(self, aCtx: Interaction, aCurrInput: str) -> list[app_commands.Choice[str]]:
-        # Show first 20 perks if no input
-        if aCurrInput == "":
-            return []
-        # Show perks that contain the input
-        _choiceList = mListMostSimilarPartial(aCurrInput, self.__handler.mGetAllPerkNames(aCtx))
-        _choices = [app_commands.Choice(name=_choice, value=_choice) for _choice in _choiceList if aCurrInput.lower() in _choice.lower()]
-        if len(_choices) == 0:
-            return [app_commands.Choice(name=aCurrInput, value=aCurrInput)]
-        return _choices
 
     @app_commands.command(name='dbdusage', description='Shows the perk/results graph of all players.')
-    @app_commands.describe(perk='(optional) The name of the perk you want to visualize.')
-    async def mShowUsageGraph(self, aCtx: Interaction, perk: str = None):
+    async def mShowUsageGraph(self, aCtx: Interaction):
         """
         This method shows the user's perk/results graph.
 
@@ -387,27 +393,10 @@ class Dbd(commands.Cog, name='dbd'):
         """
         # Log command call
         mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
-        # Get most similar perk or the same perk that was requested
-        _allPerks = self.__handler.mGetAllPerkNames(aCtx)
-        if perk:
-            perk = mFindMostSimilarPartial(perk, _allPerks)
-            mLogInfo(f'Most similar perk: {perk}')
         # Get user graph
-        _graph = self.__handler.mGetUsageGraph(aCtx, aPerk=perk)
+        _graph = self.__handler.mGetUsageGraph(aCtx)
         # Send message
         await aCtx.response.send_message(file=_graph)
-
-    @mShowUsageGraph.autocomplete("perk")
-    async def mShowUsageAutoComplete(self, aCtx: Interaction, aCurrInput: str) -> list[app_commands.Choice[str]]:
-        # Show first 20 perks if no input
-        if aCurrInput == "":
-            return []
-        # Show perks that contain the input
-        _choiceList = mListMostSimilarPartial(aCurrInput, self.__handler.mGetAllPerkNames(aCtx))
-        _choices = [app_commands.Choice(name=_choice, value=_choice) for _choice in _choiceList if aCurrInput.lower() in _choice.lower()]
-        if len(_choices) == 0:
-            return [app_commands.Choice(name=aCurrInput, value=aCurrInput)]
-        return _choices
 
     @app_commands.command(name='dbdrandomizedata', description='Randomizes CSV data.')
     async def mRandomizeData(self, aCtx: Interaction):
@@ -425,7 +414,7 @@ class Dbd(commands.Cog, name='dbd'):
         await aCtx.response.send_message('Data randomized')
 
     @app_commands.command(name='dbdresetdata', description='Resets CSV data.')
-    async def mRandomizeData(self, aCtx: Interaction):
+    async def mResetData(self, aCtx: Interaction):
         """
         This method resets the CSV data.
 

@@ -3,6 +3,8 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+from matplotlib import patheffects
+from matplotlib.patches import FancyBboxPatch
 from pandas import DataFrame
 from shutil import copyfile
 
@@ -23,7 +25,7 @@ def mIncrementColumn(aData: DataFrame, aModifiedColumn: str, aIdColumnName: str,
     aData.loc[aData[aIdColumnName] == aId, aModifiedColumn] += 1
     return aData
 
-def mCreateUsageGraph(aData: DataFrame, aTitle: str, aUser: str = None, aPerk: str = None) -> str:
+def mCreateUsageGraph(aData: DataFrame, aUserId: str | None = None) -> str:
     """
     Create a bar plot to visualize the usage data.
     
@@ -35,42 +37,42 @@ def mCreateUsageGraph(aData: DataFrame, aTitle: str, aUser: str = None, aPerk: s
     Returns:
         str: File path of the saved plot image.
     """
-    # Set the style and context for the plot
-    sns.set_theme(style="whitegrid")
-    sns.set_context("talk")
 
-    # Filter the data if a perk is specified
-    if aPerk:
-        aData = aData[aData['title'] == aPerk]
+    # Calculate the escape rate
+    aData['escape_rate'] = aData['escapes'] / aData['games']
+    aData = aData.replace([float('inf'), -float('inf')], 0)  # Replace infinite values with 0
+    aData = aData.fillna(0)  # Replace NaN values with 0
 
-    # Melt the data for better visualization
-    _meltedData = aData.melt(id_vars=["id", "title"], 
-                            value_vars=["games", "escapes", "deaths"], 
-                            var_name="Category", 
-                            value_name="Count")
+    # Sorting by a column to display top N rows
+    _sortedData = aData.sort_values(by='escape_rate', ascending=False)
 
-    # Create the bar plot
-    plt.figure(figsize=(56, 16))
-    _barPlot = sns.barplot(x="title", y="Count", hue="Category", data=_meltedData)
+    # Plotting
+    plt.figure(figsize=(16, 18))
+    _barplot = sns.barplot(x='escape_rate', y='title', data=_sortedData, palette='viridis')
 
-    # Add title and labels
-    if aUser:
-        aTitle += f" for {aUser}"
-    plt.title(aTitle)
-    plt.xlabel("Title")
-    plt.ylabel("Count")
-    
-    # Rotate x labels for better readability
-    plt.xticks(rotation=90)
+    # Adding data labels
+    for p in _barplot.patches:
+        width = p.get_width()
+        plt.text(width + 0.01, p.get_y() + p.get_height() / 2,
+                '{:.2f}'.format(width),
+                ha='left', va='center')
 
-    # Adjust the layout
+    # Customizing the plot
+    _barplot.set_xlabel('Count')
+    _barplot.set_ylabel('Title')
+    _barplot.set_title('Perk Usage')
+    _barplot.invert_yaxis()  # Highest values at the top
+    plt.yticks(range(len(_sortedData['title'])), _sortedData['title'])
     plt.tight_layout()
 
-    # Save the plot to a file
-    _prefix = aUser if aUser else 'all'
-    _plotsPath = mGetFile(f'assets/dbd/data/plots/dbdperkusage_{_prefix}.png')
-    _filePath = mMakeUserFile(aUser, _plotsPath)
-    plt.savefig(_filePath)
-    plt.close()
-    
-    return _filePath
+    # Rounding the bars
+    for patch in _barplot.patches:
+        patch.set_path_effects([
+            patheffects.Normal()
+        ])
+
+    # Save the plot
+    _userId = aUserId if aUserId else 'all'
+    _plotPath = mMakeUserFile(_userId, 'assets/dbd/data/plots/dbdperkusage.png')
+    plt.savefig(_plotPath)
+    return _plotPath

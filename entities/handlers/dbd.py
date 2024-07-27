@@ -29,7 +29,7 @@ class DbdHandler:
     def __init__(self):
         self.__workers = {}
         mLogInfo('Dbd handler initialized')
-        mUpdateCSVBasedOnJSONFile(self.__perksPath, self.__csvPath)
+        # mUpdateCSVBasedOnJSONFile(self.__perksPath, self.__csvPath)
         # mUpdatePerksJSON(self.__perksPath) # Transform only once
         # mCleanNonProjectIds(self.__imgDir)
         # mUpdateDBDUsageCSVFile(self.__perksPath, self.__csvPath)
@@ -87,18 +87,49 @@ class DbdHandler:
         # Remove worker
         self.__workers.pop(aUserId)
 
+    # Gets user id
+    def mGetUserId(self, aCtx: Interaction) -> str:
+        return aCtx.user.id
+
     # Returns a worker
     def mGetWorker(self, aUserId: str) -> DbdWorker:
         return self.__workers.get(aUserId, None)
+
+    # Stores last message sent by the bot
+    def mSetLastBuildId(self, aCtx: Interaction, aMessageId: int) -> None:
+        # Get worker
+        _worker = self.mCreateWorker(aCtx)
+        
+        # Try to store last message id
+        try:
+            _worker.mStart()
+            _worker.mSetLastBuildId(aMessageId)
+            _worker.mStop()
+        except Exception as e:
+            mLogError(f'Error setting build id: {e}')
+            _worker.mStop()
+            raise e
+
+    # Gets last message sent by the bot
+    def mGetLastBuildId(self, aCtx: Interaction) -> int:
+        # Get worker
+        _worker = self.mCreateWorker(aCtx)
+
+        # Try to get last message id
+        try:
+            _worker.mStart()
+            _msgId = _worker.mGetLastBuildId()
+            _worker.mStop()
+            return _msgId
+        except Exception as e:
+            mLogError(f'Error getting build id: {e}')
+            _worker.mStop()
+            raise e
 
     # Waits for five seconds and returns string
     def mGetRandomBuild(self, aCtx: Interaction) -> str:
         # Get worker
         _worker = self.mCreateWorker(aCtx)
-
-        # Make worker operate
-        if _worker.mIsRunning():
-            raise ValueError('Worker is currently running.')
 
         # Try to get random build
         try:
@@ -117,10 +148,6 @@ class DbdHandler:
         # Get worker
         _worker = self.mCreateWorker(aCtx)
 
-        # Make worker operate
-        if _worker.mIsRunning():
-            raise ValueError('Worker is currently running.')
-
         # Add perk to blacklist
         try:
             _worker.mStart()
@@ -137,10 +164,6 @@ class DbdHandler:
         # Get worker
         _worker = self.mCreateWorker(aCtx)
 
-        # Make worker operate
-        if _worker.mIsRunning():
-            raise ValueError('Worker is currently running.')
-
         # Remove perk from blacklist
         try:
             _worker.mStart()
@@ -155,10 +178,6 @@ class DbdHandler:
     def mReplacePerk(self, aCtx: Interaction, aPerkIndex: int) -> str:
         # Get worker
         _worker = self.mCreateWorker(aCtx)
-
-        # Make worker operate
-        if _worker.mIsRunning():
-            raise ValueError('Worker is currently running.')
 
         # Replace perk
         try:
@@ -295,7 +314,7 @@ class DbdHandler:
         # Register win
         try:
             _worker.mStart()
-            _worker.mRegisterWin()
+            _worker.mRegisterResult(True)
             _worker.mStop()
         except Exception as e:
             mLogError(f'Error registering win: {e}')
@@ -308,7 +327,7 @@ class DbdHandler:
         # Register win
         try:
             _worker.mStart()
-            _worker.mRegisterLoss()
+            _worker.mRegisterResult(False)
             _worker.mStop()
         except Exception as e:
             mLogError(f'Error registering loss: {e}')
@@ -328,14 +347,15 @@ class DbdHandler:
             mLogError(f'Error setting custom build: {e}')
             raise e
 
-    def mGetUsageGraph(self, aCtx: Interaction, aUser: str = None, aPerk: str = None) -> str:
+    def mGetUsageGraph(self, aCtx: Interaction, aUser: bool = False) -> str:
         # Get worker
         _worker = self.mCreateWorker(aCtx)
 
         # Get usage graph
         try:
             _worker.mStart()
-            _graph = _worker.mGetUsageGraph(aUser=aUser, aPerk=aPerk)
+            _userId = aCtx.user.id if aUser else None
+            _graph = _worker.mGetUsageGraph(aUserId=_userId)
             _worker.mStop()
             return _graph
         except Exception as e:
