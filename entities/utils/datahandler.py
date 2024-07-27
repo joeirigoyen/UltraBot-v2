@@ -39,30 +39,32 @@ def mCreateUsageGraph(aData: DataFrame, aUserId: str | None = None) -> str:
     """
 
     # Calculate the escape rate
-    aData['escape_rate'] = aData['escapes'] / aData['games']
+    aData['escape_rate'] = (aData['escapes'] / aData['games']) * 100
     aData = aData.replace([float('inf'), -float('inf')], 0)  # Replace infinite values with 0
     aData = aData.fillna(0)  # Replace NaN values with 0
 
     # Sorting by a column to display top N rows
-    _sortedData = aData.sort_values(by='escape_rate', ascending=False)
+    aData = aData.sort_values(by='escape_rate', ascending=False)
 
     # Plotting
-    plt.figure(figsize=(16, 18))
-    _barplot = sns.barplot(x='escape_rate', y='title', data=_sortedData, palette='viridis')
+    #increase font size of all elements
+    sns.set_theme(font_scale=5)
+    plt.figure(figsize=(50, 100))
+    _barplot = sns.barplot(x='escape_rate', y='title', hue=aData['escape_rate'], data=aData, palette='turbo', width=1)
 
     # Adding data labels
-    for p in _barplot.patches:
-        width = p.get_width()
-        plt.text(width + 0.01, p.get_y() + p.get_height() / 2,
+    for _p in _barplot.patches:
+        width = _p.get_width()
+        plt.text(width + 0.01, _p.get_y() + _p.get_height() / 2,
                 '{:.2f}'.format(width),
                 ha='left', va='center')
 
     # Customizing the plot
     _barplot.set_xlabel('Count')
     _barplot.set_ylabel('Title')
-    _barplot.set_title('Perk Usage')
+    _barplot.set_title('Win Rate by Perks')
     _barplot.invert_yaxis()  # Highest values at the top
-    plt.yticks(range(len(_sortedData['title'])), _sortedData['title'])
+    plt.yticks(range(len(aData['title'])), aData['title'])
     plt.tight_layout()
 
     # Rounding the bars
