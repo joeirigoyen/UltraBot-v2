@@ -4,7 +4,7 @@ from discord.ext import commands
 
 # Custom imports
 from entities.handlers import dbd
-from entities.handlers.buttons import ResultsButtons
+from entities.handlers.dbdbuttons import ResultsButtons
 from entities.utils.rare import mCheckIntOrStr, mFindMostSimilarPartial, mListMostSimilarPartial, mBuildEnlistedMessage
 from log.logger import mLogInfo, mLogError
 
