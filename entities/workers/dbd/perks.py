@@ -1,6 +1,7 @@
 # Generic imports
 import os
 import random
+from typing import List, Any
 
 # Custom imports
 from log.logger import mLogError, mLogInfo
@@ -219,7 +220,7 @@ class PerkTracker:
             mLogError(f'Error during image retrieval: {e}')
             return []
 
-    def mGetWhitelistedPerkNames(self) -> dict:
+    def mGetWhitelistedPerkNames(self) -> list[Any]:
         return [_perk.get(self.TITLE) for _id, _perk in self.__perks.items() if not self.mIsBlacklisted(_id)]
 
     def mGetAllPerkNames(self) -> list:

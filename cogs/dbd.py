@@ -1,5 +1,5 @@
 # Specific imports
-from discord import app_commands, Interaction, Color, Embed, Message, Reaction, User
+from discord import app_commands, Interaction, Color, Embed
 from discord.ext import commands
 
 # Custom imports
@@ -33,23 +33,17 @@ class Dbd(commands.Cog, name='dbd'):
         This method returns a random Dead by Daylight survivor perk build.
 
         Args:
-            ctx (Interaction): The context of the command.
+            aCtx (Interaction): The context of the command.
         """
         # Log command call
         mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
         # Create a handler for current user
         _perks, _collage = self.__handler.mGetRandomBuild(aCtx)
-        # Check if there is any build message
-        _lastBuildId = self.__handler.mGetLastBuildId(aCtx)
-        if _lastBuildId:
-            _channel = aCtx.channel
-            _message = await _channel.fetch_message(_lastBuildId)
-            await _message.delete()
+        # Get id per perk
+        _perkIds = [self.__handler.mGetPerkIdByName(aCtx, _perk) for _perk in _perks]
         # Send message
-        await aCtx.response.defer()
         _formattedPerks = "  |  ".join(_perks)
-        _response = await aCtx.followup.send(f'{_formattedPerks}', file=_collage, view=ResultsButtons(self.__handler, aCtx))
-        self.__handler.mSetLastBuildId(aCtx, _response.id)
+        _response = await aCtx.response.send_message(f'{_formattedPerks}', file=_collage, view=ResultsButtons(self.__handler, aCtx, _perkIds))
 
     @app_commands.command(name='dbdretry', description='Reruns previous roulette only at a specified index.')
     @app_commands.describe(index='The index of the roulette where the perk to rerun is.')
@@ -66,17 +60,10 @@ class Dbd(commands.Cog, name='dbd'):
         # Create a handler for current user
         try:
             _perks, _collage = self.__handler.mReplacePerk(aCtx, int(index) - 1)
+            _perkIds = [self.__handler.mGetPerkIdByName(aCtx, _perk) for _perk in _perks]
             _msg = "  |  ".join(_perks)
-            # Check if there is any build message
-            _lastBuildId = self.__handler.mGetLastBuildId(aCtx)
-            if _lastBuildId:
-                _channel = aCtx.channel
-                _message = await _channel.fetch_message(_lastBuildId)
-                await _message.delete()
             # Send message
-            _response = await aCtx.response.send_message(_msg, file=_collage, view=ResultsButtons(self.__handler, aCtx))
-            _message = await _response.original_message()
-            self.__handler.mSetLastBuildId(aCtx, _message.id)
+            _response = await aCtx.response.send_message(_msg, file=_collage, view=ResultsButtons(self.__handler, aCtx, _perkIds))
         except (ValueError, IndexError) as e:
             mLogError(e)
             await aCtx.response.send_message(f'No perks to retry at index {index}')
@@ -106,17 +93,10 @@ class Dbd(commands.Cog, name='dbd'):
         # Replace perk in current build
         try:
             _perks, _collage = self.__handler.mReplacePerk(aCtx, int(index) - 1)
+            _perkIds = [self.__handler.mGetPerkIdByName(aCtx, _perk) for _perk in _perks]
             _msg = "  |  ".join(_perks)
-            # Check if there is any build message
-            _lastBuildId = self.__handler.mGetLastBuildId(aCtx)
-            if _lastBuildId:
-                _channel = aCtx.channel
-                _message = await _channel.fetch_message(_lastBuildId)
-                await _message.delete()
             # Send message
-            _response = await aCtx.response.send_message(_msg, file=_collage, view=ResultsButtons(self.__handler, aCtx))
-            _message = await _response.original_message()
-            self.__handler.mSetLastBuildId(aCtx, _message.id)
+            _response = await aCtx.response.send_message(_msg, file=_collage, view=ResultsButtons(self.__handler, aCtx, _perkIds))
         except (ValueError, IndexError) as e:
             mLogError(e)
             await aCtx.response.send_message(f'No perks to blacklist at index {index}')
@@ -302,36 +282,6 @@ class Dbd(commands.Cog, name='dbd'):
             return [app_commands.Choice(name=aCurrInput, value=aCurrInput)]
         return _choices
 
-    @app_commands.command(name='dbdwin', description='Registers a won game with your current build.')
-    async def mRegisterWin(self, aCtx: Interaction):
-        """
-        This method registers a win for the user.
-
-        Args:
-            ctx (commands.Context): The context of the command.
-        """
-        # Log command call
-        mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
-        # Register win
-        self.__handler.mRegisterWin(aCtx)
-        # Send message
-        await aCtx.response.send_message('Win registered')
-
-    @app_commands.command(name='dbdloss', description='Registers a lost game with your current build.')
-    async def mRegisterLoss(self, aCtx: Interaction):
-        """
-        This method registers a loss for the user.
-
-        Args:
-            ctx (commands.Context): The context of the command.
-        """
-        # Log command call
-        mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
-        # Register win
-        self.__handler.mRegisterLoss(aCtx)
-        # Send message
-        await aCtx.response.send_message('Loss registered')
-
     @app_commands.command(name='dbdset', description='Sets a custom build.')
     @app_commands.describe(perks='The names of the perks you want to see (split by commas).')
     async def mSetCustomBuild(self, aCtx: Interaction, *, perks: str):
@@ -366,7 +316,7 @@ class Dbd(commands.Cog, name='dbd'):
         _nameStr = "  |  ".join(_names)
 
         # Send message
-        await aCtx.response.send_message(f'--- ***Custom build set*** ---\n{_nameStr}', file=_collage, view=ResultsButtons(self.__handler))
+        await aCtx.response.send_message(f'--- ***Custom build set*** ---\n{_nameStr}', file=_collage, view=ResultsButtons(self.__handler, aCtx, _perkIds))
 
     @app_commands.command(name='dbdmyusage', description='Resets your custom build.')
     async def mShowUserUsageGraph(self, aCtx: Interaction):

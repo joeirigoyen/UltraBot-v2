@@ -288,6 +288,12 @@ def mGetDBDConfig() -> dict:
     _config = mParseJsonFile(_configFile)
     return _config
 
+def mGetMusicConfig() -> dict:
+    # Get config file
+    _configFile = mGetFile('config/musicconfig.json')
+    _config = mParseJsonFile(_configFile)
+    return _config
+
 def mCleanupDbdGenImgsDir(aExcludeFiles: list[str] = None, aExcludeExts: list[str] = None) -> None:
     # Get config
     _config = mGetDBDConfig()
@@ -308,6 +314,13 @@ def mGetDBDDataDir() -> str:
     _dbdAssetsDir = os.path.join(_assetsDir, 'dbd')
     _dbdDataDir = os.path.join(_dbdAssetsDir, 'data')
     return _dbdDataDir
+
+def mGetDBDImgsDir() -> str:
+    # Get config
+    _assetsDir = mGetAssetsDir()
+    _dbdAssetsDir = os.path.join(_assetsDir, 'dbd')
+    _dbdImgsDir = os.path.join(_dbdAssetsDir, 'imgs')
+    return _dbdImgsDir
 
 def mExtractCSVData(aPath: str) -> list[dict]:
     with open(aPath, 'r') as _file:
@@ -392,10 +405,10 @@ def mUpdateCSVBasedOnJSONFile(aJsonPath: str, aCsvPath: str) -> None:
             _csvWriter.writerow({'id': _perkId, 'title': _perk})
     mLogInfo('CSV file updated')
 
-# Download files from an URL from Google Drive
+# Download files from a URL from Google Drive
 def mDownloadFromGDrive(aUrl: str, aPath: str) -> None:
     # Get file id from URL
-    _match = re.search(r'(?<=d\/)(.*?)(?=\/view\?)', aUrl)
+    _match = re.search(r'(?<=d/)(.*?)(?=/view\?)', aUrl)
     if not _match:
         mLogError(f'URL {aUrl} is not valid')
         return

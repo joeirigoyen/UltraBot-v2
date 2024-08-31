@@ -19,7 +19,8 @@ class Runner:
         load_dotenv()
         mLogInfo('Environment variables loaded')    
     
-    def mRunBot(self):
+    @staticmethod
+    def mRunBot():
         """
         This method runs the bot.
         """
@@ -36,7 +37,7 @@ class Runner:
             mExtractZip(_perkZipName, _perkDir, aRemoveWhenDone=True)
             mLogInfo('Perk images downloaded and extracted')
 
-        # Run healtcheck worker
+        # Run healthcheck worker
         _hcWorker = HealthWorker()
         _hcThread = Thread(target=_hcWorker.mRun, daemon=True)
         _hcThread.start()

@@ -6,6 +6,7 @@ from os import getenv
 
 # Custom imports
 from cogs.dbd import Dbd
+from cogs.musicplayer import Music
 from log.logger import mLogInfo, mLogError, mGetHandler
 
 # Add intents to the bot
@@ -57,7 +58,7 @@ async def on_ready():
 
 async def mSetup():
     """
-    Setup the bot with the given token.
+    Set up the bot with the given token.
     """
     # Load the environment variables
     load_dotenv()
@@ -66,6 +67,7 @@ async def mSetup():
     # Add cogs to the bot
     mLogInfo('Adding cogs')
     await mAddCog(Dbd(bot))
+    await mAddCog(Music(bot))
     mLogInfo(f'Current cogs: {bot.cogs}')
     # Sync commands
     bot.tree.copy_global_to(guild=_guildObj)
@@ -76,8 +78,7 @@ def mRun(aToken: str):
     Run the bot with the given token and log handler.
 
     Args:
-        token (str): The token of the bot.
-        log_handler (logging.Handler): The log handler of the bot.
+        aToken (str): The token of the bot.
     """
     # Run the bot
     mLogInfo('Running bot')

@@ -307,27 +307,27 @@ class DbdHandler:
             mLogError(f'Error getting perk image: {e}')
             raise e
 
-    def mRegisterWin(self, aCtx: Interaction) -> None:
+    def mRegisterWin(self, aCtx: Interaction, aPerkIds: list[str]) -> None:
         # Get worker
         _worker = self.mCreateWorker(aCtx)
 
         # Register win
         try:
             _worker.mStart()
-            _worker.mRegisterResult(True)
+            _worker.mRegisterResult(True, aPerkIds)
             _worker.mStop()
         except Exception as e:
             mLogError(f'Error registering win: {e}')
             raise e
 
-    def mRegisterLoss(self, aCtx: Interaction) -> None:
+    def mRegisterLoss(self, aCtx: Interaction, aPerkIds: list[str]) -> None:
         # Get worker
         _worker = self.mCreateWorker(aCtx)
 
         # Register win
         try:
             _worker.mStart()
-            _worker.mRegisterResult(False)
+            _worker.mRegisterResult(False, aPerkIds)
             _worker.mStop()
         except Exception as e:
             mLogError(f'Error registering loss: {e}')

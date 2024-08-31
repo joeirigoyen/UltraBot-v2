@@ -1,32 +1,36 @@
 # Generic imports
 import os
-import random
 
 # Specific imports
 from discord import File, Interaction
 
 # Custom imports
-from log.logger import mLogError, mLogInfo, mLogDebug
-from entities.utils.datahandler import mLoadCsvData, mIncrementColumn, mSaveCsvData, mCreateUsageGraph
-from entities.utils.files import mCleanupDir, mGetAssetsDir, mGetDBDConfig, mGetDBDDataDir, mGetFile, mEnsureFile
+from log.logger import mLogError, mLogInfo
+from entities.utils.datahandler import DBDDataHandler
+from entities.utils.files import mGetAssetsDir, mGetDBDDataDir, mGetFile, mEnsureFile
 from entities.utils.images import mCreateCollage, mSaveImage
 from entities.workers.dbd.perks import PerkTracker
 
 
-class DbdWorker():
+class DbdWorker:
 
     __assetsDir = mGetAssetsDir()
     __dbdAssetsDir = os.path.join(__assetsDir, 'dbd')
     __dbdGenImagesDir = os.path.join(__dbdAssetsDir, 'imgs', 'generated')
+    __dbdPerkUsagePath = os.path.join(mGetDBDDataDir(), 'dbdperkusage.csv')
 
     def __init__(self, aCtx: Interaction):
         super().__init__()
         # Set owner
-        self.__userId = aCtx.user.id
+        self.__userId = str(aCtx.user.id)
         self.__userName = aCtx.user.name
         # Get blacklist from config
         self.__tracker = PerkTracker(self.__userId, self.__userName)
         self.__running = False
+        # Load data handler
+        self.__dbdUserPerkUsagePath = os.path.join(mGetDBDDataDir(), 'generated', f'{self.__userId}_dbdperkusage.csv')
+        self.__dataHandler = DBDDataHandler(self.__dbdPerkUsagePath)
+        self.__userDataHandler = DBDDataHandler(self.__dbdUserPerkUsagePath)
         # Log worker creation
         mLogInfo(f'Worker {self.__userId} created')
 
@@ -64,10 +68,10 @@ class DbdWorker():
     def mGetLastMessage(self) -> str:
         return self.__tracker.mGetLastMessage()
 
-    def mSetLastBuildId(self, aBuildId: str) -> None:
+    def mSetLastBuildId(self, aBuildId: int) -> None:
         self.__tracker.mSetLastBuildId(aBuildId)
 
-    def mGetLastBuildId(self) -> str:
+    def mGetLastBuildId(self) -> int:
         return self.__tracker.mGetLastBuildId()
 
     def mGenerateCollage(self, aCtx: Interaction, aBuild: list) -> File:
@@ -107,7 +111,7 @@ class DbdWorker():
         # Return build names and images
         return _buildNames, _image
 
-    def mAddToBlackList(self, aPerkId: str) -> str:
+    def mAddToBlackList(self, aPerkId: str) -> None:
         # Add perk to blacklist
         self.__tracker.mAddPerkToBlackList(aPerkId)
 
@@ -116,7 +120,7 @@ class DbdWorker():
         _msg = f'Perk {_name} added to blacklist for user {self.__userId}'
         mLogInfo(_msg)
 
-    def mRemoveFromBlackList(self, aPerkId: str) -> str:
+    def mRemoveFromBlackList(self, aPerkId: str) -> None:
         # Remove perk from blacklist
         self.__tracker.mRemovePerkFromBlackList(aPerkId)
         # Log action
@@ -124,7 +128,7 @@ class DbdWorker():
         _msg = f'Perk {_name} removed from blacklist for user {self.__userId}'
         mLogInfo(_msg)
 
-    def mReplacePerk(self, aCtx: Interaction, aPerkIndex: int) -> str:
+    def mReplacePerk(self, aCtx: Interaction, aPerkIndex: int) -> tuple[list[str], File]:
         # Get last roll
         _lastRoll = self.__tracker.mGetLastRoll()
         
@@ -178,7 +182,7 @@ class DbdWorker():
         # Return formatted description
         return f'--- ***{_name.upper()}*** ---\n{_body}'
 
-    def mGetPerkImage(self, aPerkId: str) -> str:
+    def mGetPerkImage(self, aPerkId: str) -> File:
         # Get image path
         _imagePath = self.__tracker.mGetImage(aPerkId)
         return File(_imagePath)
@@ -190,36 +194,17 @@ class DbdWorker():
         _lastRoll = self.__tracker.mGetLastRoll()
         return _lastRoll[aPerkIndex]
 
-    def mRegisterResult(self, aWin: bool) -> None:
-        # Load user's record CSV
-        _userCsvFile = os.path.join(mGetDBDDataDir(), 'generated', f'{self.__userId}_dbdperkusage.csv')
-        mLogInfo('Loaded user record CSV')
-        
-        # Load general record CSV
-        _generalCsvFile = os.path.join(mGetDBDDataDir(), 'dbdperkusage.csv')
-        mLogInfo('Loaded general record CSV')
-        
-        _column = 'escapes' if aWin else 'deaths'
-        
-        # Load user and general stats
-        _lastRoll = self.__tracker.mGetLastRoll()
-        _userData = mLoadCsvData(_userCsvFile)
-        _generalData = mLoadCsvData(_generalCsvFile)
-        
+    def mRegisterResult(self, aWin: bool, aPerkIds: list[str]) -> None:        
         # For each perk in last roll, increment the counts in both CSVs
-        for _perkId in _lastRoll:
-            # Register escape in user data
-            mLogInfo(f'Registering win with perk {_perkId}')
-            _userData = mIncrementColumn(_userData, 'games', 'id', _perkId)
-            _userData = mIncrementColumn(_userData, _column, 'id', _perkId)
-            
-            # Register escape in general data
-            _generalData = mIncrementColumn(_generalData, 'games', 'id', _perkId)
-            _generalData = mIncrementColumn(_generalData, _column, 'id', _perkId)
+        _columns =['games'] + ['escapes'] if aWin else ['deaths']
+        _lastRoll = aPerkIds
+        # Register escape in user data
+        mLogInfo(f'Registering win with perk {_lastRoll}')
+        self.__userDataHandler.mIncrementColumns(_lastRoll, _columns, [1, 1])
         
-        # Save the updated CSVs
-        mSaveCsvData(_userData, _userCsvFile)
-        mSaveCsvData(_generalData, _generalCsvFile)
+        # Register escape in general data
+        self.__dataHandler.mIncrementColumns(_lastRoll, _columns, [1, 1])
+
         mLogInfo('Saved user and general record CSVs')
 
     def mSetCustomBuild(self, aCtx: Interaction, aBuild: list) -> tuple:
@@ -230,7 +215,7 @@ class DbdWorker():
         _names = [self.__tracker.mGetPerkName(_id) for _id in self.__tracker.mGetLastRoll()]
         return _names, _collage
 
-    def mGetUsageGraph(self, aUserId: str | None = None) -> str:
+    def mGetUsageGraph(self, aUserId: str | None = None) -> File:
         # Get template CSV
         _templatePath = mGetFile('assets/dbd/data/templates/dbdperkusage_template.csv')
         # Get user CSV file
@@ -241,34 +226,13 @@ class DbdWorker():
         mLogInfo("Loaded data from CSV at " + _csvFile)
 
         # Load CSV data
-        _data = mLoadCsvData(_csvFile)
-        _imagePath = mCreateUsageGraph(_data)
+        _imagePath = self.__dataHandler.mPlotClusterHeatmap()
         return File(_imagePath)
 
     def mRandomizeCSVData(self) -> None:
-        _csvPath = os.path.join(mGetDBDDataDir(), 'generated', f'{self.__userId}_dbdperkusage.csv')
-        _csvFile = mGetFile(_csvPath)
-        # Load CSV data
-        _data = mLoadCsvData(_csvFile)
-        # Randomize data values for escapes and deaths
-        _data['escapes'] = _data['escapes'].apply(lambda x: x * 0 + random.randint(10, 100))
-        _data['deaths'] = _data['deaths'].apply(lambda x: x * 0 + random.randint(10, 100))
-        # Sum games using escapes and deaths
-        _data['games'] = _data['escapes'] + _data['deaths']
-        # Save CSV data
-        mSaveCsvData(_data, _csvFile)
+        self.__userDataHandler.mRandomizeResults(52, 250)
         mLogInfo(f'Randomized CSV data for user {self.__userId}')
 
     def mResetCSVData(self) -> None:
-        _csvPath = os.path.join(mGetDBDDataDir(), 'generated', f'{self.__userId}_dbdperkusage.csv')
-        _csvFile = mGetFile(_csvPath)
-        # Load CSV data
-        _data = mLoadCsvData(_csvFile)
-        # Reset data values for escapes and deaths
-        _data['escapes'] = _data['escapes'].apply(lambda x: x * 0)
-        _data['deaths'] = _data['deaths'].apply(lambda x: x * 0)
-        # Sum games using escapes and deaths
-        _data['games'] = _data['escapes'] + _data['deaths']
-        # Save CSV data
-        mSaveCsvData(_data, _csvFile)
+        self.__userDataHandler.mResetResults()
         mLogInfo(f'Reset CSV data for user {self.__userId}')

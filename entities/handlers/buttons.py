@@ -8,11 +8,12 @@ from log.logger import mLogInfo
 from entities.utils.datahandler import *
 
 class ResultsButtons(View):
-    def __init__(self, aHandler: DbdHandler, aOriginalInt: Interaction) -> None:
-        super().__init__()
+    def __init__(self, aHandler: DbdHandler, aOriginalInt: Interaction, aPerkIds: list[str]) -> None:
+        super().__init__(timeout=None)
         self.__context = aOriginalInt
         self.__handler = aHandler
         self.__userId = aHandler.mGetUserId(self.__context)
+        self.__mappedPerks = aPerkIds
         self.__pressed = False
 
     @button(label="Won", style=ButtonStyle.primary, custom_id="win")
@@ -24,7 +25,7 @@ class ResultsButtons(View):
         # Check if the user has already registered their results
         if not self.__pressed:
             self.__pressed = True
-            self.__handler.mRegisterWin(aInteraction)
+            self.__handler.mRegisterWin(aInteraction, self.__mappedPerks)
             mLogInfo(f"Win registered by {aInteraction.user.name}")
             await aInteraction.response.send_message("Win registered.", ephemeral=True)
         else:
@@ -34,13 +35,13 @@ class ResultsButtons(View):
     async def mRegisterLoss(self, aInteraction: Interaction, aButton: Button):
         _worker = self.__handler.mCreateWorker(aInteraction)
         # Check if the user is the worker
-        if aInteraction.user.id != _worker.userId:
+        if aInteraction.user.id != self.__userId:
             await aInteraction.response.send_message("Don't interfere with builds that aren't yours.", ephemeral=True)
             return
         # Check if the user has already registered their results
         if not self.__pressed:
             self.__pressed = True
-            self.__handler.mRegisterLoss(aInteraction)
+            self.__handler.mRegisterLoss(aInteraction, self.__mappedPerks)
             mLogInfo(f"Win registered by {aInteraction.user.name}")
             await aInteraction.response.send_message("Loss registered.", ephemeral=True)
         else:
