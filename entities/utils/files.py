@@ -423,3 +423,10 @@ def mExtractZip(aZipPath: str, aExtractPath: str, aRemoveWhenDone: bool = False)
     # Remove zip file
     if aRemoveWhenDone:
         os.remove(aZipPath)
+
+def mGetConfigProperty(aProperty: str) -> str:
+    # Get config
+    _config = mGetDBDConfig()
+    # Get property
+    _value = _config.get(aProperty, None)
+    return _value

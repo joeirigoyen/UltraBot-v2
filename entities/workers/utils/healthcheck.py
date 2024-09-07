@@ -4,8 +4,10 @@ import time
 import threading
 
 # Specific imports
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from enum import Enum
+from threading import Thread
 
 # Custom imports
 from entities.utils.files import  mParseJsonFile, mGetFile, mCleanupDbdGenImgsDir, mWriteJsonFile
@@ -21,6 +23,17 @@ class TaskInfo:
     last_run: datetime
     next_run: datetime
 
+
+def mRunTask(task: TaskInfo) -> None:
+    match task.name:
+        case TaskNames.CLEANUP_DBD_GENERATED_IMAGES.value:
+            mLogInfo(f'Running task {task.name}')
+            mCleanupDbdGenImgsDir(aExcludeFiles=['.gitignore'])
+            mLogInfo(f'Task {task.name} finished')
+        case _:
+            mLogError(f'Task {task.name} not found')
+
+
 class HealthWorker:
 
     # Set paths
@@ -35,11 +48,13 @@ class HealthWorker:
         self.__tasks: list[TaskInfo] = self.mLoadTasks()
         # Get last run of each task every checkInterval
         self.__checkInterval = 1 # Every minute
+        self.__daemon: Thread | None = None
 
-    def mGetTasknamesSet(self) -> set:
+    def mGetTasknameSet(self) -> set:
         return set(self.__intervals.keys())
 
-    def mCalculateNextRun(self, aLastRun: datetime, aInterval: timedelta | int) -> datetime:
+    @staticmethod
+    def mCalculateNextRun(aLastRun: datetime, aInterval: timedelta | int) -> datetime:
         # Convert interval to timedelta if int
         if isinstance(aInterval, int):
             aInterval = timedelta(minutes=aInterval)
@@ -49,10 +64,12 @@ class HealthWorker:
             return _nextRun
         return aLastRun + aInterval
 
-    def mDateTimeToStr(self, aDateTime: datetime) -> str:
+    @staticmethod
+    def mDateTimeToStr(aDateTime: datetime) -> str:
         return aDateTime.strftime('%Y-%m-%d %H:%M:%S')
     
-    def mStrToDateTime(self, aStr: str) -> datetime:
+    @staticmethod
+    def mStrToDateTime(aStr: str) -> datetime:
         return datetime.strptime(aStr, '%Y-%m-%d %H:%M:%S')
 
     def mLoadTasks(self) -> list[TaskInfo]:
@@ -74,7 +91,7 @@ class HealthWorker:
         mWriteJsonFile(self.__intervalsFile, self.__intervals)
         return _tasks
 
-    def mUpdateTaskRuntime(self, aTask: TaskInfo) -> None:
+    def mUpdateTaskRuntime(self, aTask: TaskInfo) -> TaskInfo:
         # Update internally
         aTask.last_run = datetime.now()
         aTask.next_run = aTask.last_run + timedelta(minutes=aTask.interval)
@@ -84,34 +101,33 @@ class HealthWorker:
         mWriteJsonFile(self.__intervalsFile, self.__intervals)
         return aTask
 
-    def mRunTask(self, task: TaskInfo) -> None:
-        match task.name:
-            case TaskNames.CLEANUP_DBD_GENERATED_IMAGES.value:
-                mLogInfo(f'Running task {task.name}')
-                mCleanupDbdGenImgsDir(aExcludeFiles=['.gitignore'])
-                mLogInfo(f'Task {task.name} finished')
-            case _:
-                mLogError(f'Task {task.name} not found')
-
     def mRun(self) -> None:
         while not self.__stopEvent.is_set():
             _now = datetime.now()
             mLogInfo(f'Checking if any task needs to be run.')
+            _runningTasks = list()
             for _task in self.__tasks:
                 if _now >= _task.next_run:
                     mLogInfo(f'Task {_task.name} needs to be run.')
-                    threading.Thread(target=self.mRunTask, args=(_task,)).start()
+                    _thread = threading.Thread(target=mRunTask, args=(_task,))
+                    _runningTasks.append(_thread)
+                    _thread.start()
                     self.mUpdateTaskRuntime(_task)
-                    mLogInfo(f'Task {_task.name} runtime updated to {_task.next_run}.')
+            for _thread in _runningTasks:
+                _thread.join()
+                mLogInfo(f'Task {_thread.name} runtime updated.')
             mLogInfo(f'All tasks checked. Sleeping for {self.__checkInterval} minutes.')
             time.sleep(self.__checkInterval * 60)
 
     def start(self):
         mLogInfo('Starting healthcheck worker')
-        self.thread = threading.Thread(target=self.mRun)
-        self.thread.start()
+        self.__daemon = threading.Thread(target=self.mRun)
+        self.__daemon.start()
+        self.__daemon.daemon = True
 
     def stop(self):
         mLogInfo('Stopping healthcheck worker')
         self.__stopEvent.set()
-        self.thread.join()
+        self.__daemon.join(timeout=300)
+        if self.__daemon.is_alive():
+            mLogError('Healthcheck worker could not be stopped gracefully')
