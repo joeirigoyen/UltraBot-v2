@@ -1,11 +1,11 @@
 # Generic imports
 import os
 import random
-from typing import List, Any
 
 # Custom imports
 from log.logger import mLogError, mLogInfo
-from entities.utils.files import mParseJsonFile, mGetConfigDir, mWriteJsonFile, mMakeUserFile
+from entities.utils.files import mGetConfigProperty
+from entities.utils.rare import mSuperCleanString
 
 class PerkTracker:
     """
@@ -14,33 +14,22 @@ class PerkTracker:
     # Set constants
     MAX_PERK_COUNT = 5
     BUILD_SIZE = 4
-    TITLE = 'title'
-    CHARACTER = 'character'
-    DESCRIPTION = 'description'
-    IMG = 'img'
-    MAIN_EFFECT = 'mainEffect'
-    SECONDARY_EFFECT = 'secondaryEffect'
-    ADDITIONAL_EFFECT = 'additionalEffect'
+    TITLE = 'name'
+    CHARACTER = 'owner_name'
+    DESCRIPTION = 'main_effect'
     
-    # Set class paths
-    __configDir = mGetConfigDir()
-    __perksPath = os.path.join(__configDir, 'dbdperks.json')
-
-    # Load dicts from JSON files
-    __perks = mParseJsonFile(__perksPath)
-    
-    def __init__(self, aUserId: str, aUserName: str) -> None:
+    def __init__(self, aUserId: str, aUserName: str, aPerks: list) -> None:
         # Set owner
         self.__userId = int(aUserId)
         self.__userName = aUserName
+        self.__perks: list[dict] = aPerks
         # Set perk tracking variables
         self.__tracker = {}
         self.__lastRoll = []
         self.__lastBuildId = None
         self.__lastMessage = None
         # Set black list
-        self.__blacklistPath = os.path.join(self.__configDir, 'dbdblacklist.json')
-        self.__blacklist = self.mLoadBlackList()
+        self.__blacklist = None
 
     def mSetLastBuildId(self, aBuildId: int) -> None:
         self.__lastBuildId = aBuildId
@@ -84,52 +73,19 @@ class PerkTracker:
     def mGetLastMessage(self) -> str:
         return self.__lastMessage
 
-    def mGetPerkId(self, aPerk: dict) -> str:
-        # Get keys of perk
-        _keys = list(aPerk.keys())
-        # Get first element since it is the only key
-        return _keys[0]
-
-    def mGetPerkIdByName(self, aPerkName: str) -> str:
-        # Get perk id by name
-        for _perkId in self.__perks:
-            _perk = self.__perks[_perkId]
-            if _perk[self.TITLE] == aPerkName:
-                return _perkId
-        mLogError(f'Perk {aPerkName} not found')
-        raise ValueError(f'Perk {aPerkName} not found')
-
-    def mGetPerkName(self, aPerkId: str) -> str:
-        _perk = self.__perks[aPerkId]
-        return _perk[self.TITLE]
-
     def mGetBlackList(self) -> set:
+        # Return blacklist cache
         return self.__blacklist
 
-    def mLoadBlackList(self) -> set:
-        # Check if blacklist file exists
-        if not os.path.exists(self.__blacklistPath):
-            mWriteJsonFile(self.__blacklistPath, {})
-        # Get user blacklist
-        _blacklist = mParseJsonFile(self.__blacklistPath)
-        _userBlacklist = _blacklist.get(self.__userName, [])
-        # Return user blacklist as a set
-        mLogInfo(f'Blacklist loaded for user {self.__userName}: {_userBlacklist}')
-        return set(_userBlacklist)
+    def mSetBlackList(self, aBlacklist: set) -> None:
+        # Update blacklist cache
+        self.__blacklist = aBlacklist
 
     def mIsBlacklisted(self, aPerkId: str) -> bool:
         _result = aPerkId in self.__blacklist
         if _result:
             mLogInfo(f'Perk {aPerkId} is blacklisted for user {self.__userName}')
         return _result
-
-    def mUpdateBlackListFile(self) -> None:
-        # Save updated blacklist
-        _blacklist = mParseJsonFile(self.__blacklistPath)
-        _blacklist[self.__userName] = list(self.__blacklist)
-        mLogInfo(f'Current blacklist for user {self.__userName}: {_blacklist}')
-        mWriteJsonFile(self.__blacklistPath, _blacklist)
-        mLogInfo(f'Blacklist updated for user {self.__userName}')
 
     def mAddPerkToBlackList(self, aPerkId: str) -> None:
         # Check if perk is already blacklisted
@@ -138,8 +94,6 @@ class PerkTracker:
             return
         # Add perk to blacklist
         self.__blacklist.add(aPerkId)
-        # Save updated blacklist
-        self.mUpdateBlackListFile()
 
     def mRemovePerkFromBlackList(self, aPerkId: str) -> None:
         # Check if perk is blacklisted
@@ -148,17 +102,17 @@ class PerkTracker:
             return
         # Remove perk from blacklist
         self.__blacklist.remove(aPerkId)
-        mLogInfo(f'Perk {self.mGetPerkName(aPerkId)} removed from blacklist for user {self.__userName}')
-        # Save updated blacklist
-        self.mUpdateBlackListFile()
+        mLogInfo(f'Perk {aPerkId} removed from blacklist for user {self.__userName}')
 
     def mIsValid(self, aPerkId: str) -> bool:
         return not self.mIsBlacklisted(aPerkId) and not self.mIsRepeated(aPerkId)
 
     def mGetRandomPerkId(self) -> str:
-        # Get random perk
-        _perkId = random.choice(list(self.__perks.keys()))
-        mLogInfo(f'Random perk {self.mGetPerkName(_perkId)} selected for user {self.__userName}')
+        # Get random perk from list
+        _perk = random.choice(self.__perks)
+        # Get perk name from perk 
+        _perkId = _perk.get(self.TITLE)
+        mLogInfo(f'Random perk {_perkId} selected for user {self.__userName}')
         return _perkId
 
     def mGetRandomValidPerk(self) -> str:
@@ -168,12 +122,12 @@ class PerkTracker:
         # Check if perk is blacklisted
         while not self.mIsValid(_perkId):
             self.mUpdateTracker(_perkId)
-            mLogError(f'Perk {self.mGetPerkName(_perkId)} is blacklisted or repeated for user {self.__userId}. Getting another perk')
+            mLogError(f'Perk {_perkId} is blacklisted or repeated for user {self.__userId}. Getting another perk')
             _perkId = self.mGetRandomPerkId()
 
         # Get all the information of the perk
         self.mUpdateTracker(_perkId)
-        mLogInfo(f'Valid perk {self.mGetPerkName(_perkId)} selected for user {self.__userId}')
+        mLogInfo(f'Valid perk {_perkId} selected for user {self.__userId}')
         return _perkId
 
     def mGetRoll(self) -> list:
@@ -186,27 +140,32 @@ class PerkTracker:
         self.mUpdateLastRoll(_roll)
         return _roll
 
-    def mGetImage(self, aPerkId: str) -> str:
-        # Check if perk exists
-        if not aPerkId in self.__perks:
-            _err_msg = f'Perk {aPerkId} not found'
-            mLogError(_err_msg)
-            raise ValueError(_err_msg)
+    @staticmethod
+    def mGetImage(aPerkId: str) -> str:
+        # Get clean perk name
+        _perkName = mSuperCleanString(aPerkId)
         # Get image path
-        _path = self.__perks[aPerkId][self.IMG]
-        mLogInfo(f'Image path for perk {self.mGetPerkName(aPerkId)} retrieved: {_path}')
-        return _path
-
-    def mGetDescription(self, aPerkId: str) -> dict:
+        _imgDir = mGetConfigProperty('PERKS_IMG_DIR')
+        if not _imgDir:
+            mLogError("Could not retrieve property 'PERKS_IMG_DIR' from config")
+        _imgPath = os.path.join(_imgDir, f'{_perkName}.png')
         # Check if perk exists
-        if not aPerkId in self.__perks:
-            _err_msg = f'Perk {aPerkId} not found'
+        if not os.path.exists(_imgPath):
+            _err_msg = f'Image {_imgPath} not found'
             mLogError(_err_msg)
-            raise ValueError(_err_msg)
+            return os.path.join(_imgDir, f'notfound.png')
+        # Get image path
+        mLogInfo(f'Image path for perk {aPerkId} retrieved: {_imgPath}')
+        return _imgPath
+
+    def mGetDescription(self, aPerkId: str) -> str:
         # Get description
-        _description = self.__perks[aPerkId][self.DESCRIPTION]
-        mLogInfo(f'Description for perk {self.mGetPerkName(aPerkId)} retrieved.')
-        return _description
+        for _perk in self.__perks:
+            if _perk.get(self.TITLE) == aPerkId:
+                _description = _perk.get(self.DESCRIPTION)
+                mLogInfo(f'Description for perk {aPerkId} retrieved.')
+                return _description
+        mLogInfo(f'Description for perk {aPerkId} not found.')
 
     def mGetImages(self, aPerkIds: list[str]) -> list[str]:
         # Set images list
@@ -220,11 +179,13 @@ class PerkTracker:
             mLogError(f'Error during image retrieval: {e}')
             return []
 
-    def mGetWhitelistedPerkNames(self) -> list[Any]:
-        return [_perk.get(self.TITLE) for _id, _perk in self.__perks.items() if not self.mIsBlacklisted(_id)]
+    def mGetWhitelistedPerkNames(self) -> list[str]:
+        _perks = [_perk[self.TITLE] for _perk in self.__perks if not self.mIsBlacklisted(_perk['name'])]
+        return _perks
 
     def mGetAllPerkNames(self) -> list:
-        return [_perk.get(self.TITLE) for _perk in self.__perks.values()]
+        _perks = [_perk[self.TITLE] for _perk in self.__perks]
+        return _perks
 
     def mSetLastRoll(self, aRoll: list) -> None:
         self.__lastRoll = aRoll

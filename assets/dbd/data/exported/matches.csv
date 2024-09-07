@@ -1,0 +1,24 @@
+id,user,match_date,outcome,perk_1_name,perk_2_name,perk_3_name,perk_4_name
+2,612432506813284373,2024-08-31 20:48:49,ESCAPE,Streetwise,Hope,Windows of Opportunity,Finesse
+3,612432506813284373,2024-08-31 21:06:08,ESCAPE,Streetwise,Hope,Windows of Opportunity,Finesse
+4,612432506813284373,2024-08-31 21:18:25,DEATH,Diversion,Strength in Shadows,Finesse,Bardic Inspiration
+5,810006039813554176,2024-08-31 21:23:16,DEATH,Borrowed Time,Alert,Friendly Competition,Wake Up!
+6,612432506813284373,2024-08-31 21:42:32,DEATH,Residual Manifest,Champion of Light,Overzealous,Any Means Necessary
+7,810006039813554176,2024-08-31 22:00:54,ESCAPE,Aftercare,Self-Preservation,Appraisal,Breakout
+8,612432506813284373,2024-08-31 22:02:02,ESCAPE,Rookie Spirit,Built to Last,Invocation: Weaving Spiders,Repressed Alliance
+9,810006039813554176,2024-08-31 22:12:27,DEATH,Empathy,For the People,Background Player,Repressed Alliance
+10,612432506813284373,2024-08-31 22:20:05,ESCAPE,Inner Strength,Calm Spirit,Troubleshooter,Chemical Trap
+11,612432506813284373,2024-08-31 22:30:52,DEATH,Flip-Flop,No Mither,Botany Knowledge,Mirrored Illusion
+12,810006039813554176,2024-08-31 22:35:41,DEATH,Pharmacy,Flashbang,Saboteur,Rookie Spirit
+13,612432506813284373,2024-08-31 22:47:40,DEATH,Boil Over,Babysitter,Alert,Streetwise
+14,612432506813284373,2024-08-31 22:58:34,DEATH,Technician,Prove Thyself,Deliverance,Ace in the Hole
+15,612432506813284373,2024-08-31 23:22:58,ESCAPE,Visionary,Solidarity,Inner Focus,Head On
+16,810006039813554176,2024-08-31 23:24:10,ESCAPE,Blood Pact,Troubleshooter,Distortion,Lithe
+17,810006039813554176,2024-08-31 23:39:51,DEATH,Off the Record,Deadline,Mettle of Man,Dance With Me
+18,612432506813284373,2024-09-01 00:06:18,DEATH,Quick Gambit,Deadline,Lithe,Better than New
+19,810006039813554176,2024-09-01 00:06:27,DEATH,Reassurance,Urban Evasion,Bite the Bullet,Fast Track
+20,612432506813284373,2024-09-01 00:27:26,DEATH,Autodidact,Sprint Burst,Dead Hard,Boon: Illumination
+21,810006039813554176,2024-09-01 00:28:44,DEATH,Made for This,Iron Will,Fixated,Wiretap
+22,810006039813554176,2024-09-01 00:47:44,DEATH,No Mither,Streetwise,Breakdown,Boon: Circle of Healing
+23,612432506813284373,2024-09-01 00:48:06,DEATH,Bite the Bullet,Dramaturgy,Better Together,Stake Out
+24,810006039813554176,2024-09-01 01:04:41,ESCAPE,Overcome,Poised,Calm Spirit,Boon: Dark Theory

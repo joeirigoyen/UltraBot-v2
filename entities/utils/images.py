@@ -42,9 +42,21 @@ def mCreateCollage(aImagePaths: list[str], aWidth: int, aHeight: int, aTitle=Non
     mLogInfo(f'Collage of size {_totalWidth}x{_totalHeight} created with title {aTitle if aTitle else "None"}')
     return _collage
 
-def mSaveImage(aImage: Image, aPath: str, aUserId: str) -> str:
-    # Make user path
-    _path = mMakeUserFile(aUserId, aPath)
+def mSaveImage(aImage: Image, aPath: str) -> str:
+    # Check if the filename already exists
+    _counter = 0
+    _parentDir = os.path.dirname(aPath)
+    _basename = os.path.basename(aPath)
+    _filename = os.path.splitext(_basename)[0]
+    _extension = os.path.splitext(_basename)[1]
+    
+    for _file in os.listdir(_parentDir):
+        if _file.startswith(_filename):
+            _counter += 1
+    
+    # Create the new filename
+    _path = os.path.join(_parentDir, f'{_filename}_{_counter:03}.{_extension}')
+    
     # Save the image
     aImage.save(_path)
     mLogInfo(f'Image saved to {_path}')

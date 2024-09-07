@@ -1,7 +1,9 @@
+import jellyfish
 import Levenshtein
 import random
 import rapidfuzz
 import re
+import unicodedata
 import uuid
 
 # Get a random letter in lowercase
@@ -39,10 +41,19 @@ def mFindMostSimilarLeven(aStr: str, aList: list[str]) -> str:
             _mostSimilar = _str
     return _mostSimilar
 
+def mFindMostSimilarJelly(aStr: str, aList: list[str]) -> str:
+    _mostSimilar = ''
+    _minRatio = 99999999999
+    for _str in aList:
+        _ratio = jellyfish.damerau_levenshtein_distance(aStr, _str)
+        if _ratio < _minRatio:
+            _minRatio = _ratio
+            _mostSimilar = _str
+    return _mostSimilar
+
 # Find list of a max number of similar strings in a list
 def mListMostSimilarPartial(aStr: str, aList: list[str], aMax: int = 20) -> list[str]:
-    _similarList = []
-    _similarList.append(aStr)
+    _similarList = [aStr]
     for _str in aList:
         _ratio = rapidfuzz.fuzz.partial_ratio(aStr, _str)
         if _ratio >= 65:
@@ -57,10 +68,10 @@ def mFindMostSimilarPartial(aStr: str, aList: list[str]) -> str:
     
     # Find most similar string using partial_ratio
     _mostSimilar = ''
-    _maxRatio = 0
+    _maxRatio = 999999999999999
     for _str in aList:
-        _ratio = rapidfuzz.fuzz.partial_ratio(aStr, _str)
-        if _ratio > _maxRatio:
+        _ratio = rapidfuzz.fuzz.partial_ratio(aStr, _str, score_cutoff=0.05)
+        if _ratio < _maxRatio:
             _maxRatio = _ratio
             _mostSimilar = _str
     return _mostSimilar
@@ -75,3 +86,20 @@ def mBuildEnlistedMessage(aTitle: str, aList: list[str], marker: str = '-', leve
 # Lowercase and remove any special characters or numbers
 def mCleanString(aStr: str) -> str:
     return re.sub(r'[^a-zA-Z]', '', aStr).lower()
+
+# Lowercase, remove special characters, remove numbers, fix accents and remove spaces
+def mSuperCleanString(aStr: str) -> str:
+    # Normalize text to decompose accents
+    _normalizedText = unicodedata.normalize('NFKD', aStr)
+    
+    # Remove accents and non-letter characters, and convert to lowercase
+    _cleanText = ''.join(c for c in _normalizedText if unicodedata.category(c) == 'Ll' or c.isalpha())
+    
+    # Remove any characters that aren't letters
+    _cleanText = re.sub(r'[^a-zA-Z]', '', _cleanText)
+    
+    return _cleanText.lower()
+
+def mPrepareString(aStr: str) -> str:
+    _newStr = re.sub("\'", "\\\'", aStr)
+    return _newStr

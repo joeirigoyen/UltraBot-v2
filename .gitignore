@@ -8,6 +8,7 @@ __pycache__/
 
 # Ignore environment files
 *.env
+qodana.yaml
 
 # Ignore virtual environment files
 ultravenv/
