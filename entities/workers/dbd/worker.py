@@ -3,12 +3,14 @@ import os
 
 # Specific imports
 from discord import File, Interaction
+from datetime import datetime, timedelta
 
 # Custom imports
-from log.logger import mLogError, mLogInfo
+from log.logger import mLogInfo
 from entities.utils.datahandler import DBDDataHandler
-from entities.utils.files import mGetAssetsDir, mGetDBDDataDir, mGetFile, mEnsureFile
+from entities.utils.files import mGetAssetsDir, mGetConfigProperty
 from entities.utils.images import mCreateCollage, mSaveImage
+from entities.utils.sql import SQLRetriever
 from entities.workers.dbd.perks import PerkTracker
 
 
@@ -16,21 +18,23 @@ class DbdWorker:
 
     __assetsDir = mGetAssetsDir()
     __dbdAssetsDir = os.path.join(__assetsDir, 'dbd')
-    __dbdGenImagesDir = os.path.join(__dbdAssetsDir, 'imgs', 'generated')
-    __dbdPerkUsagePath = os.path.join(mGetDBDDataDir(), 'dbdperkusage.csv')
+    __dbdGenImagesDir = mGetConfigProperty("GENERATED_IMG_DIR")
 
     def __init__(self, aCtx: Interaction):
-        super().__init__()
         # Set owner
         self.__userId = str(aCtx.user.id)
         self.__userName = aCtx.user.name
+        # Get last database update
+        self.__sql = SQLRetriever()
+        self.__lastDbUpdate = datetime.now()
+        self.__sql.mAddUser(self.__userId, self.__userName)
         # Get blacklist from config
-        self.__tracker = PerkTracker(self.__userId, self.__userName)
-        self.__running = False
+        self.__perks = self.mGetAllPerks()
+        mLogInfo(f"Perks: {self.__perks}")
+        self.__tracker = PerkTracker(self.__userId, self.__userName, self.__perks)
+        self.mLoadUserBlackListFromDB()
         # Load data handler
-        self.__dbdUserPerkUsagePath = os.path.join(mGetDBDDataDir(), 'generated', f'{self.__userId}_dbdperkusage.csv')
-        self.__dataHandler = DBDDataHandler(self.__dbdPerkUsagePath)
-        self.__userDataHandler = DBDDataHandler(self.__dbdUserPerkUsagePath)
+        self.__dataHandler = DBDDataHandler()
         # Log worker creation
         mLogInfo(f'Worker {self.__userId} created')
 
@@ -42,25 +46,34 @@ class DbdWorker:
     def userName(self):
         return self.__userName
 
-    def mIsRunning(self):
-        return self.__running
-
-    def mStart(self):
-        if not self.mIsRunning():
-            self.__running = True
-            mLogInfo(f'Worker {self.__userId} started')
-        else:
-            mLogError(f'Worker {self.__userId} is already running')
-
-    def mStop(self):
-        if self.mIsRunning():
-            self.__running = False
-            mLogInfo(f'Worker {self.__userId} stopped')
-        else:
-            mLogError(f'Worker {self.__userId} is not running')
+    def mGetAllPerks(self) -> list[dict]:
+        return self.__sql.mGetAllPerksBasicInfo()
 
     def mGetUserBlackList(self) -> set:
-        return self.__tracker.mGetBlackList()
+        _blacklist = self.__tracker.mGetBlackList()
+        if not _blacklist:
+            mLogInfo(f'Blacklist not found for user {self.__userId}, loading from DB.')
+            self.mLoadUserBlackListFromDB()
+            _blacklist = self.__tracker.mGetBlackList()
+        return _blacklist
+
+    def mLoadUserBlackListFromDB(self) -> None:
+        _blackList = self.__sql.mGetBlackList(self.__userId)
+        self.__tracker.mSetBlackList(_blackList)
+        mLogInfo(f'Blacklist loaded from DB for user {self.__userId}')
+
+    def mUpdateUserBlackList(self, aForce: bool = False) -> None:
+        # Check time since last update
+        _maxUpdateTime = int(mGetConfigProperty('DBD_DB_UPDATE_MINS'))
+        _currentTime = datetime.now()
+        if not (_currentTime - self.__lastDbUpdate).min >= timedelta(_maxUpdateTime) and not aForce:
+            mLogInfo(f"Skipping DB update for user {self.__userId}")
+            return
+        # Update blacklist to DB
+        self.__lastDbUpdate = _currentTime
+        _currentBlackList = self.__tracker.mGetBlackList()
+        self.__sql.mUpdateBlackList(self.__userId, _currentBlackList)
+        mLogInfo(f'Blacklist updated in DB for user {self.__userId}')
 
     def mSetLastMessage(self, aMessageId: str) -> None:
         self.__tracker.mSetLastMessage(aMessageId)
@@ -83,50 +96,47 @@ class DbdWorker:
         _title = f'Build for user {_username}'
         # Create and save collage
         _collage = mCreateCollage(_images, 800, 160, aTitle=_title)
-        _collagePath = os.path.join(self.__dbdGenImagesDir, f'randombuild.png')
-        _imagePath = mSaveImage(_collage, _collagePath, self.__userId)
+        _collagePath = os.path.join(self.__dbdGenImagesDir, f'{_username}_randombuild.png')
+        _imagePath = mSaveImage(_collage, _collagePath)
         return File(_imagePath)
 
-    def mGetRandomBuild(self, aCtx: Interaction):
+    def mGetRandomBuild(self, aCtx: Interaction) -> tuple[list[str], File]:
         # Log start of method
         mLogInfo(f'Random build requested for user {self.__userId}')
         
         # Get four random perks
         _build = self.__tracker.mGetRoll()
-        _buildNames = [self.__tracker.mGetPerkName(_id) for _id in _build]
-        _images = self.__tracker.mGetImages(_build)
-        
+
         # Get collage
-        _username = aCtx.user.name
-        _title = f'Build for user {_username}'
-        _collage = mCreateCollage(_images, 800, 160, aTitle=_title)
-        
-        # Save collage
-        _collagePath = os.path.join(self.__dbdGenImagesDir, f'randombuild.png')
-        _imagePath = mSaveImage(_collage, _collagePath, self.__userId)
-        _image = File(_imagePath)
+        _image = self.mGenerateCollage(aCtx, _build)        
         
         # Log end of method
         mLogInfo(f'Random build provided for user {self.__userId}')
-        # Return build names and images
-        return _buildNames, _image
 
-    def mAddToBlackList(self, aPerkId: str) -> None:
+        # Return build names and images
+        return _build, _image
+
+    def mAddToBlackList(self, aPerkId: str) -> str:
         # Add perk to blacklist
         self.__tracker.mAddPerkToBlackList(aPerkId)
 
         # Log action
-        _name = self.__tracker.mGetPerkName(aPerkId)
-        _msg = f'Perk {_name} added to blacklist for user {self.__userId}'
+        _msg = f'Perk {aPerkId} added to blacklist for user {self.__userId}'
         mLogInfo(_msg)
+        
+        # Update to DB if needed
+        self.mUpdateUserBlackList()
+        return _msg
 
-    def mRemoveFromBlackList(self, aPerkId: str) -> None:
+    def mRemoveFromBlackList(self, aPerkId: str) -> str:
         # Remove perk from blacklist
         self.__tracker.mRemovePerkFromBlackList(aPerkId)
         # Log action
-        _name = self.__tracker.mGetPerkName(aPerkId)
-        _msg = f'Perk {_name} removed from blacklist for user {self.__userId}'
+        _msg = f'Perk {aPerkId} removed from blacklist for user {self.__userId}'
         mLogInfo(_msg)
+        # Update to DB if needed
+        self.mUpdateUserBlackList()
+        return _msg
 
     def mReplacePerk(self, aCtx: Interaction, aPerkIndex: int) -> tuple[list[str], File]:
         # Get last roll
@@ -140,7 +150,6 @@ class DbdWorker:
         _newPerk = self.__tracker.mGetRandomValidPerk()
         _lastRoll[aPerkIndex] = _newPerk
         self.__tracker.mUpdateLastRoll(_lastRoll)
-        _buildNames = [self.__tracker.mGetPerkName(_id) for _id in _lastRoll]
         
         # Make new collage
         _username = aCtx.user.name
@@ -150,89 +159,78 @@ class DbdWorker:
 
         # Save collage
         _collagePath = os.path.join(self.__dbdGenImagesDir, f'randombuild.png')
-        _imagePath = mSaveImage(_collage, _collagePath, self.__userId)
+        _imagePath = mSaveImage(_collage, _collagePath)
         _image = File(_imagePath)
 
-        return _buildNames, _image
+        return _lastRoll, _image
 
     def mGetWhitelistedPerkNames(self) -> list:
         return self.__tracker.mGetWhitelistedPerkNames()
 
-    def mGetBlacklistedPerkNames(self) -> list:
-        return [self.__tracker.mGetPerkName(_id) for _id in self.__tracker.mGetBlackList()]
+    def mGetBlacklistedPerkNames(self) -> set:
+        return self.__tracker.mGetBlackList()
 
     def mGetPerkNames(self) -> list:
         return self.__tracker.mGetAllPerkNames()
 
-    def mGetPerkName(self, aId: str) -> str:
-        return self.__tracker.mGetPerkName(aId)
-
     def mGetHelp(self, aId: str) -> str:
         # Get description
-        _description: dict = self.__tracker.mGetDescription(aId)
+        _description = self.__tracker.mGetDescription(aId)
+        _description = _description.split('.')
 
         # Format description
-        _name = self.__tracker.mGetPerkName(aId)
         _body = ""
-        for _key in _description:
-            _line = _description.get(_key)
-            if len(_line) > 0:
-                _body += f"{_description.get(_key)}\n"
+        for _paragraph in _description:
+            _body += f"{_paragraph}\n"
 
         # Return formatted description
-        return f'--- ***{_name.upper()}*** ---\n{_body}'
+        return f'--- ***{aId.upper()}*** ---\n{_body}'
 
     def mGetPerkImage(self, aPerkId: str) -> File:
         # Get image path
         _imagePath = self.__tracker.mGetImage(aPerkId)
         return File(_imagePath)
 
-    def mGetPerkIdByName(self, aPerkName: str) -> str:
-        return self.__tracker.mGetPerkIdByName(aPerkName)
-
-    def mGetPerkIdFromBuild(self, aPerkIndex: int) -> str:
+    def mGetPerkFromBuild(self, aPerkIndex: int) -> str:
         _lastRoll = self.__tracker.mGetLastRoll()
         return _lastRoll[aPerkIndex]
 
-    def mRegisterResult(self, aWin: bool, aPerkIds: list[str]) -> None:        
-        # For each perk in last roll, increment the counts in both CSVs
-        _columns =['games'] + ['escapes'] if aWin else ['deaths']
-        _lastRoll = aPerkIds
+    def mRegisterResult(self, aWin: bool, aPerkNames: list[str]) -> None:        
+        # Prepare data for DB push
+        _data = {
+            "userId": int(self.__userId),
+            "matchResult": 'ESCAPE' if aWin else 'DEATH',
+            "matchDate": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "perkNames": aPerkNames
+        }
         # Register escape in user data
-        mLogInfo(f'Registering win with perk {_lastRoll}')
-        self.__userDataHandler.mIncrementColumns(_lastRoll, _columns, [1, 1])
-        
-        # Register escape in general data
-        self.__dataHandler.mIncrementColumns(_lastRoll, _columns, [1, 1])
-
-        mLogInfo('Saved user and general record CSVs')
+        self.__sql.mRegisterMatchResult(_data)
+        mLogInfo(f'Registered win with perks {aPerkNames} for user {self.__userId}')
 
     def mSetCustomBuild(self, aCtx: Interaction, aBuild: list) -> tuple:
         # Set last roll and generate new collage
         self.__tracker.mSetLastRoll(aBuild)
         _collage = self.mGenerateCollage(aCtx, self.__tracker.mGetLastRoll())
         # Log and return
-        _names = [self.__tracker.mGetPerkName(_id) for _id in self.__tracker.mGetLastRoll()]
+        _names = self.__tracker.mGetLastRoll()
         return _names, _collage
 
-    def mGetUsageGraph(self, aUserId: str | None = None) -> File:
-        # Get template CSV
-        _templatePath = mGetFile('assets/dbd/data/templates/dbdperkusage_template.csv')
-        # Get user CSV file
-        _csvPath = os.path.join(mGetDBDDataDir(), 'dbdperkusage.csv')
-        if aUserId:
-            _csvPath = os.path.join(mGetDBDDataDir(), 'generated', f'{aUserId}_dbdperkusage.csv')
-        _csvFile = mEnsureFile(_csvPath, _templatePath)
-        mLogInfo("Loaded data from CSV at " + _csvFile)
+    def mGetUsageGraph(self, aOrder: str = 'most', aUser: int = None, aLimit: int = 10) -> File:
+        # Get SQL results
+        _results, _columns = self.__sql.mGetPerkUsage(aOrder, aUser, aLimit)
+        mLogInfo(f"Results: {_results}")
+        # Get path of image
+        _date = datetime.now().strftime('%Y-%m-%d')
+        _userStr = str(aUser) if aUser else "all"
+        _imgName = f"{_date}_{_userStr}_perks_usage.png"
+        _imgDir = mGetConfigProperty("GENERATED_IMG_DIR")
+        _imgPath = os.path.join(_imgDir, _imgName)
+        # Pass results to a new data handler
+        _title = f"Perk Usage Plot"
+        self.__dataHandler.mLoadAndCleanData(_results)
+        self.__dataHandler.mCreateBarPlot(_columns[0], _columns[1], _imgPath, aTitle=_title)
+        return File(_imgPath)
 
-        # Load CSV data
-        _imagePath = self.__dataHandler.mPlotClusterHeatmap()
-        return File(_imagePath)
-
-    def mRandomizeCSVData(self) -> None:
-        self.__userDataHandler.mRandomizeResults(52, 250)
-        mLogInfo(f'Randomized CSV data for user {self.__userId}')
-
-    def mResetCSVData(self) -> None:
-        self.__userDataHandler.mResetResults()
-        mLogInfo(f'Reset CSV data for user {self.__userId}')
+    def mKillSQLRetriever(self) -> None:
+        del self.__sql
+        mLogInfo("Closed SQL connection")

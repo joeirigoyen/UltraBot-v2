@@ -1,11 +1,11 @@
 # Specific imports
-from discord import app_commands, Interaction, Color, Embed
+from discord import app_commands, Interaction, Color, Embed, Message
 from discord.ext import commands
 
 # Custom imports
 from entities.handlers import dbd
 from entities.handlers.buttons import ResultsButtons
-from entities.utils.rare import mCheckIntOrStr, mFindMostSimilarPartial, mListMostSimilarPartial, mBuildEnlistedMessage
+from entities.utils.rare import mCheckIntOrStr, mFindMostSimilarPartial, mListMostSimilarPartial, mBuildEnlistedMessage, mFindMostSimilarJelly
 from log.logger import mLogInfo, mLogError
 
 class Dbd(commands.Cog, name='dbd'):
@@ -39,11 +39,12 @@ class Dbd(commands.Cog, name='dbd'):
         mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
         # Create a handler for current user
         _perks, _collage = self.__handler.mGetRandomBuild(aCtx)
-        # Get id per perk
-        _perkIds = [self.__handler.mGetPerkIdByName(aCtx, _perk) for _perk in _perks]
         # Send message
         _formattedPerks = "  |  ".join(_perks)
-        _response = await aCtx.response.send_message(f'{_formattedPerks}', file=_collage, view=ResultsButtons(self.__handler, aCtx, _perkIds))
+        await aCtx.response.send_message(f'{_formattedPerks}', file=_collage, view=ResultsButtons(self.__handler, aCtx, _perks))
+        _msg: Message = await aCtx.original_response()
+        # Store message
+        self.__handler.mSetLastBuildId(aCtx, _msg.id)
 
     @app_commands.command(name='dbdretry', description='Reruns previous roulette only at a specified index.')
     @app_commands.describe(index='The index of the roulette where the perk to rerun is.')
@@ -60,10 +61,19 @@ class Dbd(commands.Cog, name='dbd'):
         # Create a handler for current user
         try:
             _perks, _collage = self.__handler.mReplacePerk(aCtx, int(index) - 1)
-            _perkIds = [self.__handler.mGetPerkIdByName(aCtx, _perk) for _perk in _perks]
             _msg = "  |  ".join(_perks)
             # Send message
-            _response = await aCtx.response.send_message(_msg, file=_collage, view=ResultsButtons(self.__handler, aCtx, _perkIds))
+            await aCtx.response.send_message(_msg, file=_collage, view=ResultsButtons(self.__handler, aCtx, _perks))
+            _msg: Message = await aCtx.original_response()
+            # Erase last build message
+            try:
+                _lastBuildId = self.__handler.mGetLastBuildId(aCtx)
+                _lastBuildMsg = await aCtx.channel.fetch_message(_lastBuildId)
+                await _lastBuildMsg.delete()
+            except Exception as e:
+                mLogError(f"Could not delete previous build message due to error: {str(e)}")
+            # Store new build
+            self.__handler.mSetLastBuildId(aCtx, _msg.id)
         except (ValueError, IndexError) as e:
             mLogError(e)
             await aCtx.response.send_message(f'No perks to retry at index {index}')
@@ -93,10 +103,19 @@ class Dbd(commands.Cog, name='dbd'):
         # Replace perk in current build
         try:
             _perks, _collage = self.__handler.mReplacePerk(aCtx, int(index) - 1)
-            _perkIds = [self.__handler.mGetPerkIdByName(aCtx, _perk) for _perk in _perks]
             _msg = "  |  ".join(_perks)
             # Send message
-            _response = await aCtx.response.send_message(_msg, file=_collage, view=ResultsButtons(self.__handler, aCtx, _perkIds))
+            await aCtx.response.send_message(_msg, file=_collage, view=ResultsButtons(self.__handler, aCtx, _perks))
+            _response = aCtx.original_response()
+            # Erase last build message
+            try:
+                _lastBuildId = self.__handler.mGetLastBuildId(aCtx)
+                _lastBuildMsg = await aCtx.channel.fetch_message(_lastBuildId)
+                await _lastBuildMsg.delete()
+            except Exception as e:
+                mLogError(f"Could not delete previous build message due to error: {str(e)}")
+            # Store new build
+            self.__handler.mSetLastBuildId(aCtx, _response.id)
         except (ValueError, IndexError) as e:
             mLogError(e)
             await aCtx.response.send_message(f'No perks to blacklist at index {index}')
@@ -122,18 +141,15 @@ class Dbd(commands.Cog, name='dbd'):
         mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
         
         # Check if perk name is given or index
-        _perkId = ""
         _perkName = mCheckIntOrStr(index)
         if isinstance(_perkName, str):
             _perkName = mFindMostSimilarPartial(_perkName, self.__handler.mGetAllPerkNames(aCtx))
             mLogInfo(f'Most similar perk: {_perkName}')
-            _perkId = self.__handler.mGetPerkIdByName(aCtx, _perkName)
         else:
-            _perkId = self.__handler.mGetPerkIdFromBuild(aCtx, int(index) - 1)
-            _perkName = self.__handler.mGetPerkName(aCtx, _perkId)
+            _perkName = self.__handler.mGetPerkIdFromBuild(aCtx, int(index) - 1)
         
         # Add perk to blacklist
-        self.__handler.mAddPerkToBlacklist(aCtx, _perkId)
+        self.__handler.mAddPerkToBlacklist(aCtx, _perkName)
         await aCtx.response.send_message(f'Perk ***{_perkName}*** removed from future builds')
 
     @mRemovePerk.autocomplete("index")
@@ -164,10 +180,9 @@ class Dbd(commands.Cog, name='dbd'):
         # Check if perk name is given or index
         _perkName = mFindMostSimilarPartial(perk, self.__handler.mGetAllPerkNames(aCtx))
         mLogInfo(f'Most similar perk: {_perkName}')
-        _perkId = self.__handler.mGetPerkIdByName(aCtx, _perkName)
         
         # Remove perk from blacklist using its id
-        self.__handler.mRemovePerkFromBlacklist(aCtx, _perkId)
+        self.__handler.mRemovePerkFromBlacklist(aCtx, _perkName)
         await aCtx.response.send_message(f'Perk ***{_perkName}*** added back to future builds')
 
     @mRemoveFromBlackList.autocomplete("perk")
@@ -221,7 +236,7 @@ class Dbd(commands.Cog, name='dbd'):
             if isinstance(_index, str):
                 _index = mFindMostSimilarPartial(_index, self.__handler.mGetAllPerkNames(aCtx))
                 mLogInfo(f'Most similar perk: {_index}')
-                _perkId = self.__handler.mGetPerkIdByName(aCtx, _index)
+                _perkId = _index
             else:
                 _perkId = self.__handler.mGetPerkIdFromBuild(aCtx, int(_index) - 1)
             _msg = self.__handler.mGetHelp(aCtx, _perkId)
@@ -266,8 +281,7 @@ class Dbd(commands.Cog, name='dbd'):
             mLogInfo(f'Most similar perk: {_name}')
         
         # Send message
-        _id = self.__handler.mGetPerkIdByName(aCtx, _name)
-        _image = self.__handler.mGetPerkImage(aCtx, _id)
+        _image = self.__handler.mGetPerkImage(aCtx, _name)
         await aCtx.response.send_message(f"--- *** {_name} *** ---", file=_image)
 
     @mShowImage.autocomplete("name")
@@ -308,8 +322,7 @@ class Dbd(commands.Cog, name='dbd'):
             mLogInfo(f'Processing specified perk: {_perkName}')
             _perkName = mFindMostSimilarPartial(_perkName, _allPerks)
             # Get perk id
-            _perkId = self.__handler.mGetPerkIdByName(aCtx, _perkName)
-            _perkIds.append(_perkId)
+            _perkIds.append(_perkName)
 
         # Set custom build
         _names, _collage = self.__handler.mSetCustomBuild(aCtx, _perkIds)
@@ -329,7 +342,7 @@ class Dbd(commands.Cog, name='dbd'):
         # Log command call
         mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
         # Get user graph
-        _graph = self.__handler.mGetUsageGraph(aCtx, aUser=True)
+        _graph = self.__handler.mGetUsageGraph(aCtx, aUser=aCtx.user.id)
         # Send message
         await aCtx.response.send_message(file=_graph)
 
@@ -348,32 +361,16 @@ class Dbd(commands.Cog, name='dbd'):
         # Send message
         await aCtx.response.send_message(file=_graph)
 
-    @app_commands.command(name='dbdrandomizedata', description='Randomizes CSV data.')
-    async def mRandomizeData(self, aCtx: Interaction):
+    @app_commands.command(name='dbdkill', description='Turns off the bot.')
+    async def mKill(self, aCtx: Interaction):
         """
-        This method randomizes the CSV data.
-
-        Args:
-            ctx (commands.Context): The context of the command.
+        This method kills the bot.
         """
-        # Log command call
-        mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
-        # Randomize data
-        self.__handler.mRandomizeCSVData(aCtx)
-        # Send message
-        await aCtx.response.send_message('Data randomized')
-
-    @app_commands.command(name='dbdresetdata', description='Resets CSV data.')
-    async def mResetData(self, aCtx: Interaction):
-        """
-        This method resets the CSV data.
-
-        Args:
-            ctx (commands.Context): The context of the command.
-        """
-        # Log command call
-        mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
-        # Reset data
-        self.__handler.mResetCSVData(aCtx)
-        # Send message
-        await aCtx.response.send_message('Data reset to zeroes')
+        if aCtx.user.id != 612432506813284373:
+            await aCtx.response.send_message('You are not authorized to kill the bot.')
+            return
+        mLogInfo('Killing bot')
+        self.__handler.mUpdateBlacklistToDB()
+        await aCtx.response.send_message('Killing the bot :( Goodbye!')
+        await self.__bot.close()
+        exit(0)
