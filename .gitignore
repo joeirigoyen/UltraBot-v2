@@ -15,3 +15,4 @@ site-packages/
 
 # Ignore all log files
 *.log
+*.idea
