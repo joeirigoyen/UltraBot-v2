@@ -1,22 +1,22 @@
 # General imports
+import io
+import os
 import random
 
 # Specific imports
-from discord import Color, Embed, Guild, Interaction, VoiceChannel
+from discord import Color, Embed, FFmpegPCMAudio, Guild, Interaction, VoiceChannel, VoiceClient
 from typing import Optional
 
 
 # Custom imports
-from entities.utils.musicutils import mGetSource
 from log.logger import mLogInfo, mLogError
 
 class Song:
-    def __init__(self, aUrl: str) -> None:
+    def __init__(self, aPath: str, aAuthor: str) -> None:
         # Song data
-        self.__url: str = aUrl
-        self.__title: str = None
-        self.__duration: int = None
-        self.__output = None
+        mLogInfo(f"Creating song object for {aPath} by {aAuthor}")
+        self.__path: str = aPath
+        self.__title: str = f"{os.path.basename(self.__path)} by {aAuthor}"
         # Song queue
         self.__next: Song = None
         self.__previous: Song = None
@@ -26,16 +26,8 @@ class Song:
         return self.__title
     
     @property
-    def url(self) -> str:
-        return self.__url
-    
-    @property
-    def duration(self) -> int:
-        return self.__duration
-    
-    @property
-    def output(self) -> str:
-        return self.__output
+    def path(self) -> str:
+        return self.__path
     
     @property
     def next(self) -> Optional['Song']:
@@ -44,38 +36,51 @@ class Song:
     @property
     def previous(self) -> Optional['Song']:
         return self.__previous
-    
-    def mGetOutput(self) -> str:
-        """Create an embed with the song information
 
-        Returns:
-            Embed: The embed with the song information
-        """
-        _embed = Embed(title=self.title, color=Color.random())
-        if self.duration:
-            _embed.add_field(name='Duration:', value=self.duration)
-        if self.url:
-            _embed.add_field(name='URL:', value=self.url)
-        if self.next:
-            _embed.add_field(name='Up next:', value=self.next.title)
-        if self.previous:
-            _embed.add_field(name='Previously:', value=self.previous.title)
-        return _embed
+    @next.setter
+    def next(self, aNext: Optional['Song']) -> None:
+        # Skip if setting an empty song as next
+        mLogInfo(f"Setting next song: {aNext.title if aNext else 'None'}")
+        if not aNext:
+            return
+        self.next = aNext
 
-    def mGetSource(self) -> None:
-        # Get info sources
-        _info, _path = mGetSource(self.url)
-        _formats: list[dict] = _info.get('formats', [{}])
-        _source = _formats[0].get('url', None)
-        # Set song data
-        self.__title = _info.get('title', 'Unknown Song')
-        self.__duration = _info.get('duration', 0)
-        self.__output = _path
-        
+    @previous.setter
+    def previous(self, aPrevious: Optional['Song']) -> None:
+        # Skip if setting an empty song as previous
+        mLogInfo(f"Setting previous song: {aPrevious.title if aPrevious else 'None'}")
+        if not aPrevious:
+            mLogInfo("No previous song to set. Skipping.")
+            return
+        self.previous = aPrevious
 
+    def mCanPlay(self, aCtx: Interaction) -> bool:
+        # Check if author is in a voice channel or if the user is deafened
+        if not aCtx.user.voice or aCtx.user.voice.deaf:
+            return False
+        return True
+
+    def mPlay(self, aCtx: Interaction, aVoiceClient: VoiceClient, aCallback) -> None:
+        if not self.__path:
+            mLogError("Cannot play song without a valid path.")
+            return
+        # Create an FFmpegPCMAudio source
+        if self.mCanPlay(aCtx):
+            mLogInfo(f"Playing song: {self.__title} in {aVoiceClient.channel.name}")
+            _pcm_audio = FFmpegPCMAudio(self.__path)
+            # Pass the callback into the after argument without executing it
+            aVoiceClient.play(_pcm_audio, after=lambda error: aCallback(error, aCtx) if aCallback else None)
+
+    def mStop(self, aVoiceClient: VoiceClient) -> None:
+        if aVoiceClient.is_playing():
+            mLogInfo(f"Stopping song: {self.__title}")
+            aVoiceClient.stop()
+        else:
+            mLogError(f"Cannot stop song as nothing is currently playing.")
 
 class Playlist:
     def __init__(self) -> None:
+        self.__queue = []
         self.__current: Song = None
         self.__loop: bool = False
         self.__shuffle: bool = False
@@ -94,17 +99,61 @@ class Playlist:
             yield _current
             _current = _current.next
 
-    def mQueueSong(self, aSong: Song) -> None:
-        # Set song to current if no song is playing
-        if not self.__current:
-            self.__current = aSong
+    @property
+    def current(self) -> Song:
+        return self.__current
+
+    @current.setter
+    def current(self, aSong: Song) -> None:
+        if not aSong:
+            mLogError("Cannot set current song to None.")
             return
-        # Add song to the end of the playlist
-        _current = self.__current
-        while _current.next:
-            _current = _current.next
-        _current.next = aSong
-        aSong.previous = _current
+        self.__current = aSong
+        # If the song is already in the queue, remove it unless looping is enabled
+        if aSong in self.__queue and not self.__loop:
+            self.__queue.remove(aSong)
+
+    def mPlayNext(self) -> None:
+        if not self.__current:
+            mLogError("No current song to play next.")
+            return
+        # If shuffle is enabled, pick a random song from the queue
+        if self.__shuffle and len(self.__queue) > 1:
+            _nextSong = random.choice(self.__queue)
+        else:
+            _nextSong = self.__current.next
+        # If no next song, loop back to the start if looping is enabled
+        if not _nextSong and self.__loop:
+            _nextSong = self.__queue[0] if self.__queue else None
+        # Set the current song to the next song
+        self.current = _nextSong
+
+    def mQueueSongs(self, aSongList: list[dict]) -> None:
+        _previous = self.__queue[-1] if len(self.__queue) >= 1 else None
+        mLogInfo(f"Previous song: {_previous.title if _previous else 'None'}")
+        for _song in aSongList:
+            # Retrieve metadata from song list
+            _author, _path = _song.get('author', 'Unknown'), _song.get('path')
+            mLogInfo(f"Adding song: {_path} by {_author}")
+            if not _path:
+                mLogError("No path in one of the songs. Cannot add to queue.")
+            # Create song object and set previous/next song (if any)
+            _songObj = Song(_path, _author)
+            if _songObj:
+                mLogInfo(f"Created song object: {_songObj.title}")
+            else:
+                mLogError(f"Failed to create song object for {_path}. Skipping.")
+                continue
+            _songObj.previous = _previous
+            # Sometimes previous song is None, so we need to check
+            if _songObj.previous:
+                _songObj.previous.next = _songObj
+            if not _previous:
+                self.__current = _songObj
+            _previous = _songObj
+            mLogInfo(f"Added song: {_songObj.title} to the queue.")
+        mLogInfo(f"Added {len(aSongList)} songs to the queue.")
+        mLogInfo(f"Current song: {self.__current.title if self.__current else 'None'}")
 
     def mForceNext(self, aSong: Song) -> None:
         # Set song to current if no song is playing
@@ -126,44 +175,72 @@ class Player:
     def __init__(self) -> None:
         self.__playlists: dict[int, Playlist] = {}
 
-    async def mRegisterVC(self, aVoiceChannel: VoiceChannel) -> None:
-        self.__voiceChannel = aVoiceChannel
-        self.__voiceClient = await self.__voiceChannel.connect()
+    async def mRegisterVC(self, aCtx: Interaction) -> None:
+        self.__voiceChannel = aCtx.user.voice.channel
+        # Check if the bot is already connected to a voice channel in this guild
+        _voiceClient = aCtx.guild.voice_client
+        if _voiceClient:
+            if _voiceClient.is_connected():
+                if _voiceClient.channel != self.__voiceChannel:
+                    await _voiceClient.move_to(self.__voiceChannel)
+                self.__voiceClient = _voiceClient
+                return
+            else:
+                # Ghost connection state, force disconnect
+                mLogError("Found disconnected voice client. Cleaning up before reconnect...")
+                await _voiceClient.disconnect(force=True)
+
+        # Attempt to connect natively
+        try:
+            mLogInfo(f"Attempting to connect to voice channel: {self.__voiceChannel.name}")
+            self.__voiceClient = await self.__voiceChannel.connect(timeout=20.0, reconnect=True)
+        except Exception as e:
+            mLogError(f"Voice connection failed: {e}. Returning early.")
+            self.__voiceClient = None
+
+    def mAddSongsToQueue(self, aGuild: Guild, aMetadata: list[dict]) -> None:
+        _playlist = self.mGetPlaylist(aGuild)
+        _playlist.mQueueSongs(aMetadata)
 
     def mGetPlaylist(self, aGuild: Guild) -> Playlist:
         if not self.__playlists.get(aGuild.id):
             self.__playlists[aGuild.id] = Playlist()
         return self.__playlists[aGuild.id]
 
-    async def mCanPlay(self, aCtx: Interaction) -> bool:
-        # Check if author is in a voice channel
-        if not aCtx.user.voice:
-            await aCtx.response.send_message('You need to be in a voice channel to play music.', ephemeral=True)
-            return False
-        # Check if user is not deafened
-        if aCtx.user.voice.deaf:
-            await aCtx.response.send_message('You cannot play music while deafened.', ephemeral=True)
-            return False
-        return True
-
-    async def mPlay(self, aCtx: Interaction, aSong: Song, aForceNext: bool = False) -> None:
+    async def mPlay(self, aCtx: Interaction) -> None:
         # Register voice client
         if not aCtx.user.voice:
             mLogInfo(f'User {aCtx.user.name} is not in a voice channel.')
             return
-        await self.mRegisterVC(aCtx.user.voice.channel)
-        # Queue song
-        _playlist = self.mGetPlaylist()
-        if aForceNext:
-            _playlist.mForceNext(aSong)
-        else:
-            _playlist.mQueueSong(aSong)
-        await self.__voiceClient.play(aSong.output)
+        await self.mRegisterVC(aCtx)
+        if not self.__voiceClient:
+            mLogError("Aborting playback: Voice connection could not be established.")
+            await aCtx.followup.send("Failed to connect to the voice channel. Please try again later.", ephemeral=True)
+            return
 
-    def mAfterPlay(self, aCtx: Interaction):
-        self.__playlist.__current = self.__playlist.__current.next
-        if self.__playlist.__current:
-            next_song = self.__playlist.__current
-            self.mPlay(aCtx, next_song)
+        # Check if the player is already playing something
+        if self.__voiceClient.is_playing():
+            mLogInfo("Bot is already playing. New songs appended to queue.")
+            return
+            
+        # Play the current song
+        _playlist = self.mGetPlaylist(self.__voiceChannel.guild)
+        _current: Song = _playlist.current
+        if not _current:
+            mLogError("No song to play. Please add songs to the queue.")
+            return
+        _current.mPlay(aCtx, self.__voiceClient, self.mSongFinishedCallback)
+
+    def mSongFinishedCallback(self, error: Exception, aCtx: Interaction) -> None:
+        if error:
+            mLogError(f"Player error: {error}")
+            
+        _playlist = self.mGetPlaylist(aCtx.guild)
+        _playlist.mPlayNext()
+        
+        _next: Song = _playlist.current
+        if _next:
+            mLogInfo(f"Queue advancing to: {_next.title}")
+            _next.mPlay(aCtx, self.__voiceClient, self.mSongFinishedCallback)
         else:
-            mLogInfo('Playlist is empty.')
+            mLogInfo("Queue finished.")

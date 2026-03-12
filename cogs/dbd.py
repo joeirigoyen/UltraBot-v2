@@ -1,5 +1,8 @@
+# Imports
+import time
+
 # Specific imports
-from discord import app_commands, Interaction, Color, Embed, Message
+from discord import app_commands, Interaction, Color, Embed, Message, File
 from discord.ext import commands
 
 # Custom imports
@@ -15,6 +18,12 @@ class Dbd(commands.Cog, name='dbd'):
         self.__bot: commands.Bot = aBot
         self.__handler = dbd.DbdHandler()
         mLogInfo('Dbd cog initialized')
+
+    def mEmbedMessage(self, aMessage: str, aTitle: str = None, aImagePath: str = None):
+        _embed = Embed(title=aTitle, description=aMessage, colour=Color.blue())
+        if aImagePath:
+            _embed.set_image(url=f"attachment://{aImagePath}")
+        return _embed
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -37,14 +46,39 @@ class Dbd(commands.Cog, name='dbd'):
         """
         # Log command call
         mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
+        await aCtx.response.defer(thinking=True)
         # Create a handler for current user
         _perks, _collage = self.__handler.mGetRandomBuild(aCtx)
         # Send message
         _formattedPerks = "  |  ".join(_perks)
-        await aCtx.response.send_message(f'{_formattedPerks}', file=_collage, view=ResultsButtons(self.__handler, aCtx, _perks))
-        _msg: Message = await aCtx.original_response()
+        _embed = self.mEmbedMessage(_formattedPerks, aTitle=f"Random build for **{aCtx.user.name}**", aImagePath=_collage)
+        _msg = await aCtx.followup.send(f'{_formattedPerks}', file=File(_collage), view=ResultsButtons(self.__handler, aCtx, _perks), wait=True)
+        mLogInfo(f"Message is of type: {type(_msg)}")
         # Store message
         self.__handler.mSetLastBuildId(aCtx, _msg.id)
+
+    @app_commands.command(name='dbdsuggest', description='Suggests a build of a given type (RUSH, SLUG, LOOP, etc.)')
+    @app_commands.describe(perktype='The type of perk you want (LOOP, RUSH, INFO, SLUG, TUNNEL, SUPPORT)')
+    async def mSuggestBuild(self, aCtx: Interaction, perktype: str):
+        """
+        This method returns a random Dead by Daylight survivor perk build based on a type of perk.
+
+        Args:
+            aCtx (Interaction): The context of the command.
+            perktype (str): The type of perk.
+        """
+        # Log command call
+        mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
+        await aCtx.response.defer(thinking=True)
+        # Create a handler for current user
+        _perks, _collage = self.__handler.mGetSuggestion(aCtx, perktype)
+        # Send message
+        _formattedPerks = "  |  ".join(_perks)
+        _msg = await aCtx.followup.send(f'{_formattedPerks}', file=File(_collage),
+                                        view=ResultsButtons(self.__handler, aCtx, _perks), wait=True)
+        # Store message
+        self.__handler.mSetLastBuildId(aCtx, _msg.id)
+
 
     @app_commands.command(name='dbdretry', description='Reruns previous roulette only at a specified index.')
     @app_commands.describe(index='The index of the roulette where the perk to rerun is.')
@@ -58,13 +92,19 @@ class Dbd(commands.Cog, name='dbd'):
         """
         # Log command call
         mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
+        # Convert index to list of ints
+        if isinstance(index, str):
+            _indices = [int(i) - 1 for i in index.split(',')]
+        else:
+            _indices = [int(index) - 1]
         # Create a handler for current user
         try:
-            _perks, _collage = self.__handler.mReplacePerk(aCtx, int(index) - 1)
+            _perks, _collage = self.__handler.mReplacePerks(aCtx, _indices)
             _msg = "  |  ".join(_perks)
             # Send message
             await aCtx.response.send_message(_msg, file=_collage, view=ResultsButtons(self.__handler, aCtx, _perks))
             _msg: Message = await aCtx.original_response()
+            mLogInfo(f"Message is of type: {type(_msg)}")
             # Erase last build message
             try:
                 _lastBuildId = self.__handler.mGetLastBuildId(aCtx)
@@ -97,16 +137,23 @@ class Dbd(commands.Cog, name='dbd'):
         """
         # Log command call
         mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
+        # Convert index to list of ints
+        if isinstance(index, str):
+            _indices = [int(i) - 1 for i in index.split(',')]
+        else:
+            _indices = [int(index) - 1]
         # Add perk to blacklist
-        _perkId = self.__handler.mGetPerkIdFromBuild(aCtx, int(index) - 1)
-        self.__handler.mAddPerkToBlacklist(aCtx, _perkId)
+        for _index in _indices:
+            _perkId = self.__handler.mGetPerkIdFromBuild(aCtx, _index)
+            self.__handler.mAddPerkToBlacklist(aCtx, _perkId)
         # Replace perk in current build
         try:
-            _perks, _collage = self.__handler.mReplacePerk(aCtx, int(index) - 1)
+            _perks, _collage = self.__handler.mReplacePerks(aCtx, _indices)
             _msg = "  |  ".join(_perks)
             # Send message
             await aCtx.response.send_message(_msg, file=_collage, view=ResultsButtons(self.__handler, aCtx, _perks))
-            _response = aCtx.original_response()
+            _response: Message = await aCtx.original_response()
+            mLogInfo(f"Message is of type: {type(_response)}")
             # Erase last build message
             try:
                 _lastBuildId = self.__handler.mGetLastBuildId(aCtx)
@@ -119,6 +166,9 @@ class Dbd(commands.Cog, name='dbd'):
         except (ValueError, IndexError) as e:
             mLogError(e)
             await aCtx.response.send_message(f'No perks to blacklist at index {index}')
+        finally:
+            # Update blacklist to DB
+            self.__handler.mUpdateBlacklistToDB(aCtx)
 
     @mRemovePerkAndRerun.autocomplete("index")
     async def mRemovePerkAndRerunAutoComplete(self, aCtx: Interaction, aCurrInput: str) -> list[app_commands.Choice[int]]:
@@ -152,6 +202,9 @@ class Dbd(commands.Cog, name='dbd'):
         self.__handler.mAddPerkToBlacklist(aCtx, _perkName)
         await aCtx.response.send_message(f'Perk ***{_perkName}*** removed from future builds')
 
+        # Update blacklist to DB
+        self.__handler.mUpdateBlacklistToDB(aCtx)
+
     @mRemovePerk.autocomplete("index")
     async def mRemovePerkAutoComplete(self, aCtx: Interaction, aCurrInput: str) -> list[app_commands.Choice[int|str]]:
         # Show indices if no input
@@ -184,6 +237,9 @@ class Dbd(commands.Cog, name='dbd'):
         # Remove perk from blacklist using its id
         self.__handler.mRemovePerkFromBlacklist(aCtx, _perkName)
         await aCtx.response.send_message(f'Perk ***{_perkName}*** added back to future builds')
+
+        # Update blacklist to DB
+        self.__handler.mUpdateBlacklistToDB(aCtx)
 
     @mRemoveFromBlackList.autocomplete("perk")
     async def mAddPerkAutoComplete(self, aCtx: Interaction, aCurrInput: str) -> list[app_commands.Choice[int|str]]:
@@ -239,9 +295,20 @@ class Dbd(commands.Cog, name='dbd'):
                 _perkId = _index
             else:
                 _perkId = self.__handler.mGetPerkIdFromBuild(aCtx, int(_index) - 1)
-            _msg = self.__handler.mGetHelp(aCtx, _perkId)
+            _perkInfo = self.__handler.mGetHelp(aCtx, _perkId)
             _image = self.__handler.mGetPerkImage(aCtx, _perkId)
-            await aCtx.response.send_message(_msg, file=_image)
+            
+            if not _perkInfo:
+                await aCtx.response.send_message(f"Could not find information for perk `{_perkId}`.")
+                return
+
+            _embed = Embed(title=f"--- {_perkInfo['title'].upper()} ---", color=Color.purple())
+            _embed.add_field(name="Owner", value=_perkInfo['owner'], inline=True)
+            _embed.add_field(name="Categories", value=_perkInfo['categories'], inline=True)
+            _embed.add_field(name="Effect", value=_perkInfo['effect'], inline=False)
+            _embed.set_thumbnail(url=f"attachment://{_image.filename}")
+            
+            await aCtx.response.send_message(embed=_embed, file=_image)
         except Exception as e:
             mLogError(e)
             await aCtx.response.send_message('Error showing help. Please try again later.')
@@ -331,35 +398,105 @@ class Dbd(commands.Cog, name='dbd'):
         # Send message
         await aCtx.response.send_message(f'--- ***Custom build set*** ---\n{_nameStr}', file=_collage, view=ResultsButtons(self.__handler, aCtx, _perkIds))
 
-    @app_commands.command(name='dbdmyusage', description='Resets your custom build.')
-    async def mShowUserUsageGraph(self, aCtx: Interaction):
+    @app_commands.command(name='dbdmystats', description='Shows your perk usage and match statistics.')
+    async def mShowUserUsageStats(self, aCtx: Interaction):
         """
-        This method shows the user's perk/results graph.
+        This method shows the user's perk/results statistics.
 
         Args:
-            ctx (commands.Context): The context of the command.
+            aCtx (Interaction): The context of the command.
         """
         # Log command call
         mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
-        # Get user graph
-        _graph = self.__handler.mGetUsageGraph(aCtx, aUser=aCtx.user.id)
+        await aCtx.response.defer()
+        # Get user stats
+        _stats = self.__handler.mGetUsageStats(aCtx, aUser=aCtx.user.name)
+        
+        # Build embed
+        _embed = Embed(title=f"--- {aCtx.user.name}'s Usage Stats ---", color=Color.blue())
+        _embed.add_field(name="Total Matches", value=str(_stats["total_matches"]), inline=False)
+        _embed.add_field(name="Wins", value=str(_stats["wins"]), inline=True)
+        _embed.add_field(name="Losses", value=str(_stats["losses"]), inline=True)
+        
+        # Top 5 Perks
+        _topValue = "\n".join([f"**{p['name']}**: {p['wins']} wins" for p in _stats["top_perks"]]) if _stats["top_perks"] else "No data"
+        _embed.add_field(name="Top 5 Best Perks (by Wins)", value=_topValue, inline=False)
+        
+        # Worst 5 Perks
+        _worstValue = "\n".join([f"**{p['name']}**: {p['losses']} losses" for p in _stats["worst_perks"]]) if _stats["worst_perks"] else "No data"
+        _embed.add_field(name="Top 5 Worst Perks (by Losses)", value=_worstValue, inline=False)
+        
         # Send message
-        await aCtx.response.send_message(file=_graph)
+        await aCtx.followup.send(embed=_embed)
 
-    @app_commands.command(name='dbdusage', description='Shows the perk/results graph of all players.')
-    async def mShowUsageGraph(self, aCtx: Interaction):
+
+    @app_commands.command(name='dbdstats', description='Shows the perk usage and match statistics of all players.')
+    async def mShowUsageStats(self, aCtx: Interaction):
         """
-        This method shows the user's perk/results graph.
+        This method shows the global perk/results statistics.
 
         Args:
-            ctx (commands.Context): The context of the command.
+            aCtx (Interaction): The context of the command.
         """
         # Log command call
         mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
-        # Get user graph
-        _graph = self.__handler.mGetUsageGraph(aCtx)
+        await aCtx.response.defer()
+        # Get overall stats
+        _stats = self.__handler.mGetUsageStats(aCtx)
+        
+        # Build embed
+        _embed = Embed(title="--- Global Usage Stats ---", color=Color.blue())
+        _embed.add_field(name="Total Matches", value=str(_stats["total_matches"]), inline=False)
+        _embed.add_field(name="Wins", value=str(_stats["wins"]), inline=True)
+        _embed.add_field(name="Losses", value=str(_stats["losses"]), inline=True)
+        
+        # Top 5 Perks
+        _topValue = "\n".join([f"**{p['name']}**: {p['wins']} wins" for p in _stats["top_perks"]]) if _stats["top_perks"] else "No data"
+        _embed.add_field(name="Top 5 Best Perks (by Wins)", value=_topValue, inline=False)
+        
+        # Worst 5 Perks
+        _worstValue = "\n".join([f"**{p['name']}**: {p['losses']} losses" for p in _stats["worst_perks"]]) if _stats["worst_perks"] else "No data"
+        _embed.add_field(name="Top 5 Worst Perks (by Losses)", value=_worstValue, inline=False)
+        
         # Send message
-        await aCtx.response.send_message(file=_graph)
+        await aCtx.followup.send(embed=_embed)
+
+    @app_commands.command(name='dbdupdate', description='Manually triggers a perk database update from the wiki.')
+    async def mManualUpdate(self, aCtx: Interaction):
+        """
+        This method manually triggers the DBD perk scraper and updates the
+        healthcheck task timestamp to avoid overlapping with the scheduled run.
+
+        Args:
+            aCtx (Interaction): The context of the command.
+        """
+        # Restrict to admin
+        if aCtx.user.id != 612432506813284373:
+            await aCtx.response.send_message('You are not authorized to run this command.')
+            return
+
+        mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
+        await aCtx.response.defer(thinking=True)
+
+        try:
+            # Run the scraper
+            from entities.utils.dbdwebscraper import DBDScraper
+            DBDScraper().run()
+
+            # Update hctasks.json to reset the scheduled timer
+            from datetime import datetime
+            from entities.utils.files import mGetFile, mParseJsonFile, mWriteJsonFile
+
+            _tasksFile = mGetFile('config/hctasks.json')
+            _tasks = mParseJsonFile(_tasksFile)
+            if 'update_dbd_perks' in _tasks:
+                _tasks['update_dbd_perks']['last_run'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                mWriteJsonFile(_tasksFile, _tasks)
+
+            await aCtx.followup.send('Perk database updated successfully!')
+        except Exception as e:
+            mLogError(f'Manual update failed: {e}')
+            await aCtx.followup.send(f'Update failed: {e}')
 
     @app_commands.command(name='dbdkill', description='Turns off the bot.')
     async def mKill(self, aCtx: Interaction):
@@ -371,6 +508,7 @@ class Dbd(commands.Cog, name='dbd'):
             return
         mLogInfo('Killing bot')
         self.__handler.mUpdateBlacklistToDB()
+        time.sleep(10)
         await aCtx.response.send_message('Killing the bot :( Goodbye!')
         await self.__bot.close()
         exit(0)

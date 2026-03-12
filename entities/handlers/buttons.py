@@ -39,10 +39,9 @@ class ResultsButtons(View):
             await aInteraction.response.send_message("Don't interfere with builds that aren't yours.", ephemeral=True)
             return
         # Check if the user has already registered their results
-        if not self.__pressed:
             self.__pressed = True
             self.__handler.mRegisterLoss(aInteraction, self.__mappedPerks)
-            mLogInfo(f"Win registered by {aInteraction.user.name}")
+            mLogInfo(f"Loss registered by {aInteraction.user.name}")
             await aInteraction.response.send_message("Loss registered.", ephemeral=True)
         else:
             await aInteraction.response.send_message("Already registered your results.", ephemeral=True)

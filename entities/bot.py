@@ -1,8 +1,6 @@
 # Specific imports
-from dotenv import load_dotenv
-from discord import Intents, Activity, ActivityType, Object
+from discord import Intents, Activity, ActivityType, Object, Guild
 from discord.ext import commands
-from os import getenv
 
 # Custom imports
 from cogs.dbd import Dbd
@@ -14,7 +12,7 @@ def mLoadIntents():
     """
     Initialize the intents of the bot.
     """
-    intents = Intents.default()
+    intents = Intents.all()
     mLogInfo('Default intents set')
 
     # Additions to the default intents
@@ -54,24 +52,27 @@ async def on_ready():
     """
     # Log the bot's name
     mLogInfo(f'Logged in as {bot.user.name}')
-    await bot.change_presence(activity=Activity(type=ActivityType.playing, name='$help'))
+    await bot.change_presence(activity=Activity(type=ActivityType.playing, name='/dbdrandom'))
+    # Sync commands
+    mLogInfo(f"Bot's guilds: {bot.guilds}")
+    if len(bot.guilds) == 0:
+        mLogError('No guilds found. Cannot sync commands.')
+        return
+    for _guild in bot.guilds:
+        mLogInfo(f'Syncing commands for guild: {_guild.name} ({_guild.id})')
+        bot.tree.copy_global_to(guild=_guild)
+        await bot.tree.sync(guild=_guild)
+        mLogInfo(f'New guild synced: {_guild}')
 
 async def mSetup():
     """
     Set up the bot with the given token.
     """
-    # Load the environment variables
-    load_dotenv()
-    _guildId = getenv('DISCORD_GUILD')
-    _guildObj = Object(id=_guildId)
     # Add cogs to the bot
     mLogInfo('Adding cogs')
     await mAddCog(Dbd(bot))
     await mAddCog(Music(bot))
     mLogInfo(f'Current cogs: {bot.cogs}')
-    # Sync commands
-    bot.tree.copy_global_to(guild=_guildObj)
-    await bot.tree.sync(guild=_guildObj)
 
 def mRun(aToken: str):
     """

@@ -87,7 +87,7 @@ class DbdWorker:
     def mGetLastBuildId(self) -> int:
         return self.__tracker.mGetLastBuildId()
 
-    def mGenerateCollage(self, aCtx: Interaction, aBuild: list) -> File:
+    def mGenerateCollage(self, aCtx: Interaction, aBuild: list) -> str:
         # For each perk in aBuild, get the image
         _images = self.__tracker.mGetImages(aBuild)
         # Get username
@@ -98,9 +98,9 @@ class DbdWorker:
         _collage = mCreateCollage(_images, 800, 160, aTitle=_title)
         _collagePath = os.path.join(self.__dbdGenImagesDir, f'{_username}_randombuild.png')
         _imagePath = mSaveImage(_collage, _collagePath)
-        return File(_imagePath)
+        return _imagePath
 
-    def mGetRandomBuild(self, aCtx: Interaction) -> tuple[list[str], File]:
+    def mGetRandomBuild(self, aCtx: Interaction) -> tuple[list[str], str]:
         # Log start of method
         mLogInfo(f'Random build requested for user {self.__userId}')
         
@@ -116,6 +116,26 @@ class DbdWorker:
         # Return build names and images
         return _build, _image
 
+    def mGetSuggestion(self, aCtx: Interaction, aType: str) -> tuple[list[str], str]:
+        # Log start
+        mLogInfo(f'Suggestion requested for user {self.__userId}')
+
+        # Get four random perks of certain type
+        _build = self.__sql.mGetSuggestion(aCtx.user.id, aType)
+        
+        # Cache the roll so dbdhelp and other follow-ups can access it by index
+        self.__tracker.mUpdateLastRoll(_build)
+
+        # Get collage
+        _image = self.mGenerateCollage(aCtx, _build)
+
+        # Log end of method
+        mLogInfo(f'Random suggestion provided for user {self.__userId}')
+
+        # Return build names and images
+        return _build, _image
+
+
     def mAddToBlackList(self, aPerkId: str) -> str:
         # Add perk to blacklist
         self.__tracker.mAddPerkToBlackList(aPerkId)
@@ -125,7 +145,7 @@ class DbdWorker:
         mLogInfo(_msg)
         
         # Update to DB if needed
-        self.mUpdateUserBlackList()
+        self.mUpdateUserBlackList(aForce=True)
         return _msg
 
     def mRemoveFromBlackList(self, aPerkId: str) -> str:
@@ -135,7 +155,7 @@ class DbdWorker:
         _msg = f'Perk {aPerkId} removed from blacklist for user {self.__userId}'
         mLogInfo(_msg)
         # Update to DB if needed
-        self.mUpdateUserBlackList()
+        self.mUpdateUserBlackList(aForce=True)
         return _msg
 
     def mReplacePerk(self, aCtx: Interaction, aPerkIndex: int) -> tuple[list[str], File]:
@@ -164,6 +184,33 @@ class DbdWorker:
 
         return _lastRoll, _image
 
+    def mReplacePerks(self, aCtx: Interaction, aPerkIndices: list[int]) -> tuple[list[str], File]:
+        # Get last roll
+        _lastRoll = self.__tracker.mGetLastRoll()
+        
+        # Check if there are perks to replace
+        if len(_lastRoll) < self.__tracker.BUILD_SIZE:
+            raise ValueError('No perks to replace')
+        
+        # Get new valid perk and update last roll
+        for _index in aPerkIndices:
+            _newPerk = self.__tracker.mGetRandomValidPerk()
+            _lastRoll[_index] = _newPerk
+        self.__tracker.mUpdateLastRoll(_lastRoll)
+        
+        # Make new collage
+        _username = aCtx.user.name
+        _images = self.__tracker.mGetImages(_lastRoll)
+        _title = f'Build for user {_username}'
+        _collage = mCreateCollage(_images, 800, 160, aTitle=_title)
+
+        # Save collage
+        _collagePath = os.path.join(self.__dbdGenImagesDir, f'randombuild.png')
+        _imagePath = mSaveImage(_collage, _collagePath)
+        _image = File(_imagePath)
+
+        return _lastRoll, _image
+
     def mGetWhitelistedPerkNames(self) -> list:
         return self.__tracker.mGetWhitelistedPerkNames()
 
@@ -173,18 +220,26 @@ class DbdWorker:
     def mGetPerkNames(self) -> list:
         return self.__tracker.mGetAllPerkNames()
 
-    def mGetHelp(self, aId: str) -> str:
-        # Get description
-        _description = self.__tracker.mGetDescription(aId)
-        _description = _description.split('.')
-
+    def mGetHelp(self, aId: str) -> dict:
+        # Get description info
+        _info = self.__tracker.mGetHelpInfo(aId)
+        if not _info:
+            return None
+            
+        _description = _info["effect"].split('.')
         # Format description
         _body = ""
         for _paragraph in _description:
-            _body += f"{_paragraph}\n"
+            if _paragraph.strip():
+                _body += f"{_paragraph.strip()}.\n"
 
-        # Return formatted description
-        return f'--- ***{aId.upper()}*** ---\n{_body}'
+        # Return formatted dictionary
+        return {
+            "title": aId,
+            "owner": _info["owner"],
+            "categories": _info["categories"],
+            "effect": _body
+        }
 
     def mGetPerkImage(self, aPerkId: str) -> File:
         # Get image path
@@ -215,21 +270,8 @@ class DbdWorker:
         _names = self.__tracker.mGetLastRoll()
         return _names, _collage
 
-    def mGetUsageGraph(self, aOrder: str = 'most', aUser: int = None, aLimit: int = 10) -> File:
-        # Get SQL results
-        _results, _columns = self.__sql.mGetPerkUsage(aOrder, aUser, aLimit)
-        mLogInfo(f"Results: {_results}")
-        # Get path of image
-        _date = datetime.now().strftime('%Y-%m-%d')
-        _userStr = str(aUser) if aUser else "all"
-        _imgName = f"{_date}_{_userStr}_perks_usage.png"
-        _imgDir = mGetConfigProperty("GENERATED_IMG_DIR")
-        _imgPath = os.path.join(_imgDir, _imgName)
-        # Pass results to a new data handler
-        _title = f"Perk Usage Plot"
-        self.__dataHandler.mLoadAndCleanData(_results)
-        self.__dataHandler.mCreateBarPlot(_columns[0], _columns[1], _imgPath, aTitle=_title)
-        return File(_imgPath)
+    def mGetUsageStats(self, aUser: str = None) -> dict:
+        return self.__sql.mGetUsageStats(aUser)
 
     def mKillSQLRetriever(self) -> None:
         del self.__sql

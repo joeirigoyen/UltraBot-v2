@@ -1,12 +1,25 @@
 # General imports
-import threading
 from typing import Any
+from cachetools import TTLCache
+from functools import wraps
 
 # Specific imports
 from discord import Interaction, File
 # Custom imports
 from entities.workers.dbd.worker import DbdWorker
 from log.logger import mLogError, mLogInfo
+
+def mHandleDbdErrors(error_msg: str):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                mLogError(f'{error_msg}: {e}')
+                raise e
+        return wrapper
+    return decorator
 
 class DbdHandler:
 
@@ -16,7 +29,7 @@ class DbdHandler:
         return cls.instance
 
     def __init__(self):
-        self.__workers = {}
+        self.__workers = TTLCache(maxsize=500, ttl=3600)
         mLogInfo('Dbd handler initialized')
 
     # Creates a worker and optionally returns it
@@ -45,203 +58,88 @@ class DbdHandler:
         return self.__workers.get(aUserId, None)
 
     # Stores last message sent by the bot
+    @mHandleDbdErrors('Error setting build id')
     def mSetLastBuildId(self, aCtx: Interaction, aMessageId: int) -> None:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
-        
-        # Try to store last message id
-        try:
-            _worker.mSetLastBuildId(aMessageId)
-        except Exception as e:
-            mLogError(f'Error setting build id: {e}')
-            raise e
+        self.mCreateWorker(aCtx).mSetLastBuildId(aMessageId)
 
     # Gets last message sent by the bot
+    @mHandleDbdErrors('Error getting build id')
     def mGetLastBuildId(self, aCtx: Interaction) -> int:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
-
-        # Try to get last message id
-        try:
-            _msgId = _worker.mGetLastBuildId()
-            return _msgId
-        except Exception as e:
-            mLogError(f'Error getting build id: {e}')
-            raise e
+        return self.mCreateWorker(aCtx).mGetLastBuildId()
 
     # Waits for five seconds and returns string
+    @mHandleDbdErrors('Error getting random build')
     def mGetRandomBuild(self, aCtx: Interaction) -> tuple:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
+        return self.mCreateWorker(aCtx).mGetRandomBuild(aCtx)
 
-        # Try to get random build
-        try:
-            _names, _collage = _worker.mGetRandomBuild(aCtx)
-            return _names, _collage
-        except Exception as e:
-            mLogError(f'Error getting random build: {e}')
-            raise e
+    # Gets random perk suggestion given a type of perk
+    @mHandleDbdErrors('Error getting suggestion')
+    def mGetSuggestion(self, aCtx: Interaction, aPerkType: str) -> tuple:
+        return self.mCreateWorker(aCtx).mGetSuggestion(aCtx, aPerkType)
 
     # Adds perk to the user's blacklist
+    @mHandleDbdErrors('Error adding perk to blacklist')
     def mAddPerkToBlacklist(self, aCtx: Interaction, aPerkId: str) -> str:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
-
-        # Add perk to blacklist
-        try:
-            _msg = _worker.mAddToBlackList(aPerkId)
-            return _msg
-        except Exception  as e:
-            mLogError(f'Error adding perk to blacklist: {e}')
-            raise e
+        return self.mCreateWorker(aCtx).mAddToBlackList(aPerkId)
 
     # Removes perk from the user's blacklist
+    @mHandleDbdErrors('Error removing perk from blacklist')
     def mRemovePerkFromBlacklist(self, aCtx: Interaction, aPerkId: str) -> str:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
-
-        # Remove perk from blacklist
-        try:
-            _msg = _worker.mRemoveFromBlackList(aPerkId)
-            return _msg
-        except Exception as e:
-            mLogError(f'Error removing perk from blacklist: {e}')
+        return self.mCreateWorker(aCtx).mRemoveFromBlackList(aPerkId)
 
     # Replaces perk in the user's build
+    @mHandleDbdErrors('Error replacing perk')
     def mReplacePerk(self, aCtx: Interaction, aPerkIndex: int) -> tuple[list[str], File]:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
+        return self.mCreateWorker(aCtx).mReplacePerk(aCtx, aPerkIndex)
 
-        # Replace perk
-        try:
-            _perks, _collage = _worker.mReplacePerk(aCtx, aPerkIndex)
-            return _perks, _collage
-        except (ValueError, IndexError) as e:
-            mLogError(f'Error replacing perk: {e}')
-            raise e
+    # Replaces various perks in the user's build
+    @mHandleDbdErrors('Error replacing perks')
+    def mReplacePerks(self, aCtx: Interaction, aPerkIndices: list[int]) -> tuple[list[str], File]:
+        return self.mCreateWorker(aCtx).mReplacePerks(aCtx, aPerkIndices)
 
     # Gets all valid perks
+    @mHandleDbdErrors('Error getting whitelisted perks')
     def mGetWhitelistedPerkNames(self, aCtx: Interaction) -> list:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
-
-        # Get all perks
-        try:
-            _perks = _worker.mGetWhitelistedPerkNames()
-            return _perks
-        except Exception as e:
-            mLogError(f'Error getting whitelisted perks: {e}')
-            raise e
+        return self.mCreateWorker(aCtx).mGetWhitelistedPerkNames()
 
     # Gets all blacklisted perks
+    @mHandleDbdErrors('Error getting blacklisted perks')
     def mGetBlacklistedPerkNames(self, aCtx: Interaction) -> set:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
-
-        # Get all perks
-        try:
-            _blacklistedPerks = _worker.mGetBlacklistedPerkNames()
-            return _blacklistedPerks
-        except Exception as e:
-            mLogError(f'Error getting blacklisted perks: {e}')
-            raise
+        return self.mCreateWorker(aCtx).mGetBlacklistedPerkNames()
 
     # Gets all perks
+    @mHandleDbdErrors('Error getting perks')
     def mGetAllPerkNames(self, aCtx: Interaction) -> list:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
-
-        # Get all perks
-        try:
-            _perks = _worker.mGetPerkNames()
-            return _perks
-        except Exception as e:
-            mLogError(f'Error getting perks: {e}')
-            raise e
+        return self.mCreateWorker(aCtx).mGetPerkNames()
 
     # Gets help for a perk
-    def mGetHelp(self, aCtx: Interaction, aId: str) -> str:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
+    @mHandleDbdErrors('Error getting help by name')
+    def mGetHelp(self, aCtx: Interaction, aId: str) -> dict:
+        return self.mCreateWorker(aCtx).mGetHelp(aId)
 
-        # Get help by name
-        try:
-            _msg = _worker.mGetHelp(aId)
-            return _msg
-        except Exception as e:
-            mLogError(f'Error getting help by name: {e}')
-            raise e
-
+    @mHandleDbdErrors('Error getting perk id from build')
     def mGetPerkIdFromBuild(self, aCtx: Interaction, aPerkIndex: int) -> str:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
+        return self.mCreateWorker(aCtx).mGetPerkFromBuild(aPerkIndex)
 
-        # Get perk id
-        try:
-            _perkId = _worker.mGetPerkFromBuild(aPerkIndex)
-            return _perkId
-        except Exception as e:
-            mLogError(f'Error getting perk id from build: {e}')
-            raise e
-
+    @mHandleDbdErrors('Error getting perk image')
     def mGetPerkImage(self, aCtx: Interaction, aPerkId: str) -> File:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
+        return self.mCreateWorker(aCtx).mGetPerkImage(aPerkId)
 
-        # Get image
-        try:
-            _image = _worker.mGetPerkImage(aPerkId)
-            return _image
-        except Exception as e:
-            mLogError(f'Error getting perk image: {e}')
-            raise e
-
+    @mHandleDbdErrors('Error registering win')
     def mRegisterWin(self, aCtx: Interaction, aPerkIds: list[str]) -> None:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
+        self.mCreateWorker(aCtx).mRegisterResult(True, aPerkIds)
 
-        # Register win
-        try:
-            _worker.mRegisterResult(True, aPerkIds)
-        except Exception as e:
-            mLogError(f"Error registering win: {e}")
-            raise e
-
+    @mHandleDbdErrors('Error registering loss')
     def mRegisterLoss(self, aCtx: Interaction, aPerkIds: list[str]) -> None:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
+        self.mCreateWorker(aCtx).mRegisterResult(False, aPerkIds)
 
-        # Register loss
-        try:
-            _worker.mRegisterResult(False, aPerkIds)
-        except Exception as e:
-            mLogError(f"Error registering loss: {e}")
-            raise e
-
+    @mHandleDbdErrors('Error setting custom build')
     def mSetCustomBuild(self, aCtx: Interaction, aPerkIds: list[str]) -> tuple[Any, Any]:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
+        return self.mCreateWorker(aCtx).mSetCustomBuild(aCtx, aPerkIds)
 
-        # Set custom build
-        try:
-            _names, _collage = _worker.mSetCustomBuild(aCtx, aPerkIds)
-            return _names, _collage
-        except Exception as e:
-            mLogError(f'Error setting custom build: {e}')
-            raise e
-
-    def mGetUsageGraph(self, aCtx: Interaction, aUser: int = None) -> File:
-        # Get worker
-        _worker = self.mCreateWorker(aCtx)
-
-        # Get usage graph
-        try:
-            _userId = aCtx.user.id if aUser else None
-            _graph = _worker.mGetUsageGraph(aUser=aUser)
-            return _graph
-        except Exception as e:
-            mLogError(f'Error getting usage graph: {e}')
-            raise e
+    @mHandleDbdErrors('Error getting usage stats')
+    def mGetUsageStats(self, aCtx: Interaction, aUser: str = None) -> dict:
+        return self.mCreateWorker(aCtx).mGetUsageStats(aUser=aUser)
 
     def mUpdateBlacklistToDB(self) -> None:
         for _worker in self.__workers.values():

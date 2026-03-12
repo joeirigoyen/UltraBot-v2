@@ -1,7 +1,12 @@
 {
     "cleanup_dbd_generated_imgs": {
         "enabled": true,
-        "interval": 1,
+        "interval": 15,
+        "last_run": ""
+    },
+    "update_dbd_perks": {
+        "enabled": true,
+        "interval": 1440,
         "last_run": ""
     }
 }

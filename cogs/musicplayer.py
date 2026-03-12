@@ -4,7 +4,9 @@ from discord import  FFmpegPCMAudio, Guild, Interaction
 from discord.ext import commands
 
 # Custom imports
-from entities.workers.music.music import Player, Song
+from entities.utils.rare import mSuperCleanString
+from entities.utils.musicutils import MusicDownloader
+from entities.workers.music.music import Player
 from log.logger import mLogInfo, mLogError
 
 class Music(commands.Cog, name='music'):
@@ -12,6 +14,8 @@ class Music(commands.Cog, name='music'):
         # Initialize cog
         super().__init__()
         self.__bot: commands.Bot = aBot
+        self.__downloader = MusicDownloader()
+        self.__player = Player()
         mLogInfo('Music cog initialized')
 
     def mGetGuild(self, aCtx: Interaction) -> Guild:
@@ -25,19 +29,25 @@ class Music(commands.Cog, name='music'):
         mLogInfo('Music cog is ready')
 
     @app_commands.command(name='play', description='Play a song')
-    @app_commands.describe(url='The URL of the song to play')
-    @app_commands.describe(force_next='(optional) Force the song to play next.')
-    async def mPlay(self, aCtx: Interaction, url: str, force_next: bool = False):
-        mLogInfo(f'Play command received with url: {url}')
-        # Get song data
-        _song = Song(url)
-        # Spawn player and intialize a playlist
-        _player = Player()
-        _playlist = _player.mGetPlaylist(self.mGetGuild(aCtx))
-        # Add the song to the playlist
-        if force_next:
-            _playlist.mForceNext(_song)
-        else:
-            _playlist.mQueueSong(_song)
-        # Play the song
-        await _player.mPlay(aCtx, _song)
+    @app_commands.describe(urls='The URLs of the song to play')
+    async def mPlay(self, aCtx: Interaction, urls: str):
+        # Split each url separated by commas
+        _urls = [_url.strip() for _url in urls.split(',')]
+        mLogInfo(f'Play command received with urls: {_urls}')
+        # Download songs and get the list of download paths
+        await aCtx.response.defer(thinking=True)
+        _songs = await self.__downloader.mDownloadQueue(_urls)
+        mLogInfo(f'Downloaded songs: {_songs}')
+        # Add songs to playlist
+        _author = mSuperCleanString(aCtx.user.name)
+        _songsMetadata = [{"author": _author, "path": _path} for _path in _songs]
+        mLogInfo(f'Adding songs to queue: {_songsMetadata}')
+        self.__player.mAddSongsToQueue(self.mGetGuild(aCtx), _songsMetadata)
+        # Start playing
+        await self.__player.mPlay(aCtx)
+        await aCtx.followup.send(f'Downloaded songs: {", ".join(_songs)}', ephemeral=True)
+
+    @app_commands.command(name='musicping', description='Ping the bot')
+    async def mPing(self, aCtx: Interaction):
+        mLogInfo('Ping command received')
+        await aCtx.response.send_message('Pong!', ephemeral=True)

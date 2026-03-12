@@ -12,9 +12,12 @@ from threading import Thread
 # Custom imports
 from entities.utils.files import  mParseJsonFile, mGetFile, mCleanupDbdGenImgsDir, mWriteJsonFile
 from log.logger import mLogInfo, mLogError
+from entities.utils.dbdwebscraper import DBDScraper
 
 class TaskNames(Enum):
     CLEANUP_DBD_GENERATED_IMAGES = 'cleanup_dbd_generated_imgs'
+    CLEANUP_MUSIC_DOWNLOADS = 'cleanup_music_downloads'
+    UPDATE_DBD_PERKS = 'update_dbd_perks'
 
 @dataclass
 class TaskInfo:
@@ -29,6 +32,10 @@ def mRunTask(task: TaskInfo) -> None:
         case TaskNames.CLEANUP_DBD_GENERATED_IMAGES.value:
             mLogInfo(f'Running task {task.name}')
             mCleanupDbdGenImgsDir(aExcludeFiles=['.gitignore'])
+            mLogInfo(f'Task {task.name} finished')
+        case TaskNames.UPDATE_DBD_PERKS.value:
+            mLogInfo(f'Running task {task.name}')
+            DBDScraper().run()
             mLogInfo(f'Task {task.name} finished')
         case _:
             mLogError(f'Task {task.name} not found')

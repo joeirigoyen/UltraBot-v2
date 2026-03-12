@@ -9,6 +9,12 @@ __pycache__/
 # Ignore environment files
 *.env
 qodana.yaml
+*.exe
+
+# Ignore downloads of images and other media
+assets/music/
+assets/dbd/
+utils/musicdownloads/
 
 # Ignore virtual environment files
 ultravenv/

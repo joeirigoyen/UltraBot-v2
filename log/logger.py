@@ -51,7 +51,7 @@ def mSetHandlerToLogger(name: str, log_file: str, log_level: int) -> None:
     _handlers[name] = _handler
     _logger.addHandler(_handler)
 
-# Initialize hadlers
+# Initialize handlers
 mSetHandlerToLogger('info', 'log/info.log', logging.INFO)
 mSetHandlerToLogger('error', 'log/error.log', logging.ERROR)
 mSetHandlerToLogger('trace', 'log/trace.log', logging.DEBUG)

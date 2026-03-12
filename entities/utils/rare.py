@@ -56,7 +56,7 @@ def mListMostSimilarPartial(aStr: str, aList: list[str], aMax: int = 20) -> list
     _similarList = [aStr]
     for _str in aList:
         _ratio = rapidfuzz.fuzz.partial_ratio(aStr, _str)
-        if _ratio >= 65:
+        if _ratio >= 50:
             _similarList.append(_str)
     return _similarList[:aMax]
 
@@ -68,10 +68,10 @@ def mFindMostSimilarPartial(aStr: str, aList: list[str]) -> str:
     
     # Find most similar string using partial_ratio
     _mostSimilar = ''
-    _maxRatio = 999999999999999
+    _maxRatio = 0
     for _str in aList:
         _ratio = rapidfuzz.fuzz.partial_ratio(aStr, _str, score_cutoff=0.05)
-        if _ratio < _maxRatio:
+        if _ratio > _maxRatio:
             _maxRatio = _ratio
             _mostSimilar = _str
     return _mostSimilar

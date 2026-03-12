@@ -17,6 +17,7 @@ class PerkTracker:
     TITLE = 'name'
     CHARACTER = 'owner_name'
     DESCRIPTION = 'main_effect'
+    CATEGORIES = 'categories'
     
     def __init__(self, aUserId: str, aUserName: str, aPerks: list) -> None:
         # Set owner
@@ -142,30 +143,49 @@ class PerkTracker:
 
     @staticmethod
     def mGetImage(aPerkId: str) -> str:
-        # Get clean perk name
-        _perkName = mSuperCleanString(aPerkId)
-        # Get image path
+        # Get image directory
         _imgDir = mGetConfigProperty('PERKS_IMG_DIR')
         if not _imgDir:
             mLogError("Could not retrieve property 'PERKS_IMG_DIR' from config")
+            _imgDir = 'assets/dbd/imgs/perks'
+            
+        # Try finding the UUID from the database
+        from entities.utils.sql import SQLRetriever
+        try:
+            _sql = SQLRetriever()
+            _perk = _sql.mGetPerkByName(aPerkId)
+            if _perk and _perk.get('uuid'):
+                _perkName = _perk['uuid']
+            else:
+                _perkName = mSuperCleanString(aPerkId)
+        except Exception as e:
+            mLogError(f"Failed to fetch UUID for perk {aPerkId}: {e}")
+            _perkName = mSuperCleanString(aPerkId)
+
         _imgPath = os.path.join(_imgDir, f'{_perkName}.png')
-        # Check if perk exists
+        
+        # Check if perk image exists
         if not os.path.exists(_imgPath):
-            _err_msg = f'Image {_imgPath} not found'
+            _err_msg = f'Image {_imgPath} not found for perk {aPerkId}'
             mLogError(_err_msg)
-            return os.path.join(_imgDir, f'notfound.png')
-        # Get image path
+            return os.path.join(_imgDir, 'notfound.png')
+            
         mLogInfo(f'Image path for perk {aPerkId} retrieved: {_imgPath}')
         return _imgPath
 
-    def mGetDescription(self, aPerkId: str) -> str:
-        # Get description
+    def mGetHelpInfo(self, aPerkId: str) -> dict:
+        # Get description, owner, and categories
         for _perk in self.__perks:
             if _perk.get(self.TITLE) == aPerkId:
-                _description = _perk.get(self.DESCRIPTION)
-                mLogInfo(f'Description for perk {aPerkId} retrieved.')
-                return _description
-        mLogInfo(f'Description for perk {aPerkId} not found.')
+                _info = {
+                    "owner": _perk.get('character') or "Generic",
+                    "categories": _perk.get('categories') or "None",
+                    "effect": _perk.get(self.DESCRIPTION)
+                }
+                mLogInfo(f'Help info for perk {aPerkId} retrieved.')
+                return _info
+        mLogInfo(f'Help info for perk {aPerkId} not found.')
+        return None
 
     def mGetImages(self, aPerkIds: list[str]) -> list[str]:
         # Set images list
