@@ -150,6 +150,27 @@ class TestReplacementPerk:
             _tracker.mUpdateLastRoll(_roll)
 
 
+class TestWeightPersistence:
+    def test_get_set_weights_round_trip(self):
+        """Weights saved via mGetWeights and restored via mSetWeights should be preserved."""
+        _tracker1 = _make_tracker()
+        _tracker1.mGetRoll()  # Decay some weights
+
+        # Extract weights (simulates saving to DB)
+        _savedWeights = _tracker1.mGetWeights()
+        _decayedPerks = {k: v for k, v in _savedWeights.items() if v < 1.0}
+        assert len(_decayedPerks) > 0, "Should have some decayed weights after a roll"
+
+        # Create a fresh tracker and restore weights (simulates loading from DB)
+        _tracker2 = _make_tracker()
+        _tracker2.mSetWeights(_decayedPerks)
+
+        for _name, _weight in _decayedPerks.items():
+            assert _tracker2.mGetWeights()[_name] == _weight, (
+                f"Weight for {_name} not restored correctly"
+            )
+
+
 if __name__ == '__main__':
     import pytest
     pytest.main([__file__, '-v'])

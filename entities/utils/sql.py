@@ -60,6 +60,22 @@ class SQLRetriever:
             _query = f'INSERT INTO blacklists (user_id, perk_name) VALUES ({aUserId}, \'{_perkName}\');'
             self.mExecute(_query)
 
+    # Get perk weights for a user (only decayed weights are stored)
+    def mGetWeights(self, aUserId: str) -> dict[str, float]:
+        _query = f'SELECT perk_name, weight FROM perk_weights WHERE user_id = {aUserId};'
+        _results, _ = self.mRetrieve(_query)
+        return {_row[0]: float(_row[1]) for _row in _results}
+
+    # Save perk weights for a user (delete-and-reinsert, only weights < 1.0)
+    def mSaveWeights(self, aUserId: str, aWeights: dict[str, float]) -> None:
+        _query = f'DELETE FROM perk_weights WHERE user_id = {aUserId};'
+        self.mExecute(_query)
+        for _perkName, _weight in aWeights.items():
+            if _weight < 1.0:
+                _safeName = mPrepareString(_perkName)
+                _query = f'INSERT INTO perk_weights (user_id, perk_name, weight) VALUES ({aUserId}, \'{_safeName}\', {_weight});'
+                self.mExecute(_query)
+
     # Register match result
     def mRegisterMatchResult(self, aParams: dict) -> None:
         # Get parameters

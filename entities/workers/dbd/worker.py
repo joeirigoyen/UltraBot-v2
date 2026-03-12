@@ -33,6 +33,7 @@ class DbdWorker:
         mLogInfo(f"Perks: {self.__perks}")
         self.__tracker = PerkTracker(self.__userId, self.__userName, self.__perks)
         self.mLoadUserBlackListFromDB()
+        self.mLoadUserWeightsFromDB()
         # Load data handler
         self.__dataHandler = DBDDataHandler()
         # Log worker creation
@@ -62,6 +63,17 @@ class DbdWorker:
         self.__tracker.mSetBlackList(_blackList)
         mLogInfo(f'Blacklist loaded from DB for user {self.__userId}')
 
+    def mLoadUserWeightsFromDB(self) -> None:
+        _weights = self.__sql.mGetWeights(self.__userId)
+        if _weights:
+            self.__tracker.mSetWeights(_weights)
+        mLogInfo(f'Weights loaded from DB for user {self.__userId}')
+
+    def mSaveUserWeightsToDB(self) -> None:
+        _weights = self.__tracker.mGetWeights()
+        self.__sql.mSaveWeights(self.__userId, _weights)
+        mLogInfo(f'Weights saved to DB for user {self.__userId}')
+
     def mUpdateUserBlackList(self, aForce: bool = False) -> None:
         # Check time since last update
         _maxUpdateTime = int(mGetConfigProperty('DBD_DB_UPDATE_MINS'))
@@ -69,11 +81,12 @@ class DbdWorker:
         if not (_currentTime - self.__lastDbUpdate).min >= timedelta(_maxUpdateTime) and not aForce:
             mLogInfo(f"Skipping DB update for user {self.__userId}")
             return
-        # Update blacklist to DB
+        # Update blacklist and weights to DB
         self.__lastDbUpdate = _currentTime
         _currentBlackList = self.__tracker.mGetBlackList()
         self.__sql.mUpdateBlackList(self.__userId, _currentBlackList)
-        mLogInfo(f'Blacklist updated in DB for user {self.__userId}')
+        self.mSaveUserWeightsToDB()
+        mLogInfo(f'Blacklist and weights updated in DB for user {self.__userId}')
 
     def mSetLastMessage(self, aMessageId: str) -> None:
         self.__tracker.mSetLastMessage(aMessageId)
@@ -106,6 +119,9 @@ class DbdWorker:
         
         # Get four random perks
         _build = self.__tracker.mGetRoll()
+
+        # Save weights after every roll
+        self.mSaveUserWeightsToDB()
 
         # Get collage
         _image = self.mGenerateCollage(aCtx, _build)        

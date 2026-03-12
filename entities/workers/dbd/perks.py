@@ -54,6 +54,17 @@ class PerkTracker:
         # Black list
         self.__blacklist: set | None = None
 
+    def mGetWeights(self) -> dict[str, float]:
+        """Return the current weights dict (for persistence)."""
+        return dict(self.__weights)
+
+    def mSetWeights(self, aWeights: dict[str, float]) -> None:
+        """Merge persisted weights into the in-memory weights dict."""
+        for _name, _weight in aWeights.items():
+            if _name in self.__weights:
+                self.__weights[_name] = _weight
+        mLogInfo(f'Loaded {len(aWeights)} persisted weights for user {self.__userId}')
+
     # ------------------------------------------------------------------
     # Weight helpers
     # ------------------------------------------------------------------
