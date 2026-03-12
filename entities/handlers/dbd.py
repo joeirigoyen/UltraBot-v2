@@ -109,21 +109,33 @@ class DbdHandler:
 
     # Gets all perks
     @mHandleDbdErrors('Error getting perks')
-    def mGetAllPerkNames(self, aCtx: Interaction) -> list:
-        return self.mCreateWorker(aCtx).mGetPerkNames()
+    def mGetAllPerkNames(self, aCtx: Interaction, aUserId: int = None) -> list:
+        _worker = self.__workers.get(aUserId) if aUserId else self.mCreateWorker(aCtx)
+        if not _worker:
+            return []
+        return _worker.mGetPerkNames()
 
     # Gets help for a perk
     @mHandleDbdErrors('Error getting help by name')
-    def mGetHelp(self, aCtx: Interaction, aId: str) -> dict:
-        return self.mCreateWorker(aCtx).mGetHelp(aId)
+    def mGetHelp(self, aCtx: Interaction, aId: str, aUserId: int = None) -> dict:
+        _worker = self.__workers.get(aUserId) if aUserId else self.mCreateWorker(aCtx)
+        if not _worker:
+            return None
+        return _worker.mGetHelp(aId)
 
     @mHandleDbdErrors('Error getting perk id from build')
-    def mGetPerkIdFromBuild(self, aCtx: Interaction, aPerkIndex: int) -> str:
-        return self.mCreateWorker(aCtx).mGetPerkFromBuild(aPerkIndex)
+    def mGetPerkIdFromBuild(self, aCtx: Interaction, aPerkIndex: int, aUserId: int = None) -> str:
+        _worker = self.__workers.get(aUserId) if aUserId else self.mCreateWorker(aCtx)
+        if not _worker:
+            return None
+        return _worker.mGetPerkFromBuild(aPerkIndex)
 
     @mHandleDbdErrors('Error getting perk image')
-    def mGetPerkImage(self, aCtx: Interaction, aPerkId: str) -> File:
-        return self.mCreateWorker(aCtx).mGetPerkImage(aPerkId)
+    def mGetPerkImage(self, aCtx: Interaction, aPerkId: str, aUserId: int = None) -> File:
+        _worker = self.__workers.get(aUserId) if aUserId else self.mCreateWorker(aCtx)
+        if not _worker:
+            return None
+        return _worker.mGetPerkImage(aPerkId)
 
     @mHandleDbdErrors('Error registering win')
     def mRegisterWin(self, aCtx: Interaction, aPerkIds: list[str]) -> None:

@@ -2,6 +2,7 @@
 import time
 
 # Specific imports
+import discord
 from discord import app_commands, Interaction, Color, Embed, Message, File
 from discord.ext import commands
 
@@ -274,29 +275,46 @@ class Dbd(commands.Cog, name='dbd'):
         await aCtx.response.send_message(_blacklistMsg)
 
     @app_commands.command(name='dbdhelp', description='Shows the available info for the Dead by Daylight perks.')
-    @app_commands.describe(index='The perk name or the index of the roulette where the perk is.')
-    async def mShowHelp(self, aCtx: Interaction, index: str):
+    @app_commands.describe(index='The perk name or the index of the roulette where the perk is.',
+                           user='Optional: check another user\'s build instead of your own.')
+    async def mShowHelp(self, aCtx: Interaction, index: str, user: discord.Member = None):
         """
         This method helps in showing the info about the perks.
 
         Args:
             ctx (commands.Context): The context of the command.
+            user (discord.Member): Optional user whose build to look up.
         """
         # Log command call
         mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
+
+        # Determine which user's build to look up
+        _targetUserId = user.id if user else None
+        _targetUserName = user.display_name if user else aCtx.user.name
+
+        # If a user was specified, check that they have an active build
+        if user:
+            _worker = self.__handler.mGetWorker(_targetUserId)
+            if _worker is None:
+                await aCtx.response.send_message(f'**{_targetUserName}** has no current build.')
+                return
+
         # Send message
         try:
             _index = mCheckIntOrStr(index)
             mLogInfo(f'Index: {_index}')
             _perkId = ""
             if isinstance(_index, str):
-                _index = mFindMostSimilarPartial(_index, self.__handler.mGetAllPerkNames(aCtx))
+                _index = mFindMostSimilarPartial(_index, self.__handler.mGetAllPerkNames(aCtx, aUserId=_targetUserId))
                 mLogInfo(f'Most similar perk: {_index}')
                 _perkId = _index
             else:
-                _perkId = self.__handler.mGetPerkIdFromBuild(aCtx, int(_index) - 1)
-            _perkInfo = self.__handler.mGetHelp(aCtx, _perkId)
-            _image = self.__handler.mGetPerkImage(aCtx, _perkId)
+                _perkId = self.__handler.mGetPerkIdFromBuild(aCtx, int(_index) - 1, aUserId=_targetUserId)
+                if _perkId is None:
+                    await aCtx.response.send_message(f'**{_targetUserName}** has no current build.')
+                    return
+            _perkInfo = self.__handler.mGetHelp(aCtx, _perkId, aUserId=_targetUserId)
+            _image = self.__handler.mGetPerkImage(aCtx, _perkId, aUserId=_targetUserId)
             
             if not _perkInfo:
                 await aCtx.response.send_message(f"Could not find information for perk `{_perkId}`.")
@@ -306,6 +324,8 @@ class Dbd(commands.Cog, name='dbd'):
             _embed.add_field(name="Owner", value=_perkInfo['owner'], inline=True)
             _embed.add_field(name="Categories", value=_perkInfo['categories'], inline=True)
             _embed.add_field(name="Effect", value=_perkInfo['effect'], inline=False)
+            if user:
+                _embed.set_footer(text=f"From {_targetUserName}'s build")
             _embed.set_thumbnail(url=f"attachment://{_image.filename}")
             
             await aCtx.response.send_message(embed=_embed, file=_image)
