@@ -51,14 +51,15 @@ def mFindMostSimilarJelly(aStr: str, aList: list[str]) -> str:
             _mostSimilar = _str
     return _mostSimilar
 
-# Find list of a max number of similar strings in a list
+# Find list of a max number of similar strings in a list, sorted by relevance
 def mListMostSimilarPartial(aStr: str, aList: list[str], aMax: int = 20) -> list[str]:
-    _similarList = [aStr]
+    _scored = []
     for _str in aList:
-        _ratio = rapidfuzz.fuzz.partial_ratio(aStr, _str)
-        if _ratio >= 50:
-            _similarList.append(_str)
-    return _similarList[:aMax]
+        _ratio = rapidfuzz.fuzz.partial_ratio(aStr.lower(), _str.lower())
+        if _ratio >= 55:
+            _scored.append((_str, _ratio))
+    _scored.sort(key=lambda x: x[1], reverse=True)
+    return [s[0] for s in _scored[:aMax]]
 
 # Find the most similar string in a list using rapidfuzz's partial_ratio
 def mFindMostSimilarPartial(aStr: str, aList: list[str]) -> str:

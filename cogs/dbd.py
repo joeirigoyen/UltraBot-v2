@@ -201,7 +201,7 @@ class Dbd(commands.Cog, name='dbd'):
         
         # Add perk to blacklist
         self.__handler.mAddPerkToBlacklist(aCtx, _perkName)
-        await aCtx.response.send_message(f'Perk ***{_perkName}*** removed from future builds')
+        await aCtx.response.send_message(f'Perk ***{_perkName}*** removed from future builds', ephemeral=True)
 
         # Update blacklist to DB
         self.__handler.mUpdateBlacklistToDB(aCtx)
@@ -211,12 +211,11 @@ class Dbd(commands.Cog, name='dbd'):
         # Show indices if no input
         if aCurrInput == "":
             return [app_commands.Choice(name=i, value=i) for i in ['1', '2', '3', '4']]
-        # Show perks that contain the input
+        # Show perks that match the input (fuzzy)
         _choiceList = mListMostSimilarPartial(aCurrInput, self.__handler.mGetWhitelistedPerkNames(aCtx))
-        _choices = [app_commands.Choice(name=_choice, value=_choice) for _choice in _choiceList if aCurrInput.lower() in _choice.lower()]
-        if len(_choices) == 0:
+        if not _choiceList:
             return [app_commands.Choice(name=aCurrInput, value=aCurrInput)]
-        return _choices
+        return [app_commands.Choice(name=_choice, value=_choice) for _choice in _choiceList[:25]]
 
     @app_commands.command(name='dbdadd', description='Adds back a perk back to your future builds.')
     @app_commands.describe(perk='The name of the perk to add back to your future builds.')
@@ -237,7 +236,7 @@ class Dbd(commands.Cog, name='dbd'):
         
         # Remove perk from blacklist using its id
         self.__handler.mRemovePerkFromBlacklist(aCtx, _perkName)
-        await aCtx.response.send_message(f'Perk ***{_perkName}*** added back to future builds')
+        await aCtx.response.send_message(f'Perk ***{_perkName}*** added back to future builds', ephemeral=True)
 
         # Update blacklist to DB
         self.__handler.mUpdateBlacklistToDB(aCtx)
@@ -251,12 +250,11 @@ class Dbd(commands.Cog, name='dbd'):
                 return [app_commands.Choice(name=_perk, value=_perk) for _perk in _blacklistedPerks[:20]]
             return [app_commands.Choice(name=_perk, value=_perk) for _perk in _blacklistedPerks]
         
-        # Show perks that contain the input
+        # Show perks that match the input (fuzzy)
         _choiceList = mListMostSimilarPartial(aCurrInput, self.__handler.mGetBlacklistedPerkNames(aCtx))
-        _choices = [app_commands.Choice(name=_choice, value=_choice) for _choice in _choiceList if aCurrInput.lower() in _choice.lower()]
-        if len(_choices) == 0:
+        if not _choiceList:
             return [app_commands.Choice(name=aCurrInput, value=aCurrInput)]
-        return _choices
+        return [app_commands.Choice(name=_choice, value=_choice) for _choice in _choiceList[:25]]
 
     @app_commands.command(name='dbdbanlist', description='Shows your blacklisted Dead by Daylight perks.')
     async def mGetBlackList(self, aCtx: Interaction):
@@ -272,7 +270,7 @@ class Dbd(commands.Cog, name='dbd'):
         _perks = self.__handler.mGetBlacklistedPerkNames(aCtx)
         _blacklistMsg = mBuildEnlistedMessage(f'--- *** {aCtx.user.name}\'s Blacklisted Perks*** ---', _perks)
         # Send message
-        await aCtx.response.send_message(_blacklistMsg)
+        await aCtx.response.send_message(_blacklistMsg, ephemeral=True)
 
     @app_commands.command(name='dbdhelp', description='Shows the available info for the Dead by Daylight perks.')
     @app_commands.describe(index='The perk name or the index of the roulette where the perk is.',
@@ -296,7 +294,7 @@ class Dbd(commands.Cog, name='dbd'):
         if user:
             _worker = self.__handler.mGetWorker(_targetUserId)
             if _worker is None:
-                await aCtx.response.send_message(f'**{_targetUserName}** has no current build.')
+                await aCtx.response.send_message(f'**{_targetUserName}** has no current build.', ephemeral=True)
                 return
 
         # Send message
@@ -311,13 +309,13 @@ class Dbd(commands.Cog, name='dbd'):
             else:
                 _perkId = self.__handler.mGetPerkIdFromBuild(aCtx, int(_index) - 1, aUserId=_targetUserId)
                 if _perkId is None:
-                    await aCtx.response.send_message(f'**{_targetUserName}** has no current build.')
+                    await aCtx.response.send_message(f'**{_targetUserName}** has no current build.', ephemeral=True)
                     return
             _perkInfo = self.__handler.mGetHelp(aCtx, _perkId, aUserId=_targetUserId)
             _image = self.__handler.mGetPerkImage(aCtx, _perkId, aUserId=_targetUserId)
             
             if not _perkInfo:
-                await aCtx.response.send_message(f"Could not find information for perk `{_perkId}`.")
+                await aCtx.response.send_message(f"Could not find information for perk `{_perkId}`.", ephemeral=True)
                 return
 
             _embed = Embed(title=f"--- {_perkInfo['title'].upper()} ---", color=Color.purple())
@@ -328,22 +326,21 @@ class Dbd(commands.Cog, name='dbd'):
                 _embed.set_footer(text=f"From {_targetUserName}'s build")
             _embed.set_thumbnail(url=f"attachment://{_image.filename}")
             
-            await aCtx.response.send_message(embed=_embed, file=_image)
+            await aCtx.response.send_message(embed=_embed, file=_image, ephemeral=True)
         except Exception as e:
             mLogError(e)
-            await aCtx.response.send_message('Error showing help. Please try again later.')
+            await aCtx.response.send_message('Error showing help. Please try again later.', ephemeral=True)
 
     @mShowHelp.autocomplete("index")
     async def mHelpAutoComplete(self, aCtx: Interaction, aCurrInput: str) -> list[app_commands.Choice[int|str]]:
         # Show indices if no input
         if aCurrInput == "":
             return [app_commands.Choice(name=i, value=i) for i in ['1', '2', '3', '4']]
-        # Show perks that contain the input
+        # Show perks that match the input (fuzzy)
         _choiceList = mListMostSimilarPartial(aCurrInput, self.__handler.mGetAllPerkNames(aCtx))
-        _choices = [app_commands.Choice(name=_choice, value=_choice) for _choice in _choiceList if aCurrInput.lower() in _choice.lower()]
-        if len(_choices) == 0:
+        if not _choiceList:
             return [app_commands.Choice(name=aCurrInput, value=aCurrInput)]
-        return _choices
+        return [app_commands.Choice(name=_choice, value=_choice) for _choice in _choiceList[:25]]
 
     @app_commands.command(name='dbdimg', description='Shows the image of a given Dead by Daylight perk.')
     @app_commands.describe(name='The name of the perk you want to see.')
@@ -376,12 +373,11 @@ class Dbd(commands.Cog, name='dbd'):
         # Show first 20 perks if no input
         if aCurrInput == "":
             return [app_commands.Choice(name=_perk, value=_perk) for _perk in self.__handler.mGetAllPerkNames(aCtx)[:20]]
-        # Show perks that contain the input
+        # Show perks that match the input (fuzzy)
         _choiceList = mListMostSimilarPartial(aCurrInput, self.__handler.mGetAllPerkNames(aCtx))
-        _choices = [app_commands.Choice(name=_choice, value=_choice) for _choice in _choiceList if aCurrInput.lower() in _choice.lower()]
-        if len(_choices) == 0:
+        if not _choiceList:
             return [app_commands.Choice(name=aCurrInput, value=aCurrInput)]
-        return _choices
+        return [app_commands.Choice(name=_choice, value=_choice) for _choice in _choiceList[:25]]
 
     @app_commands.command(name='dbdset', description='Sets a custom build.')
     @app_commands.describe(perks='The names of the perks you want to see (split by commas).')
