@@ -13,11 +13,13 @@ from threading import Thread
 from entities.utils.files import  mParseJsonFile, mGetFile, mCleanupDbdGenImgsDir, mWriteJsonFile
 from log.logger import mLogInfo, mLogError
 from entities.utils.dbdwebscraper import DBDScraper
+from entities.workers.dbd.rag import get_rag_pipeline
 
 class TaskNames(Enum):
     CLEANUP_DBD_GENERATED_IMAGES = 'cleanup_dbd_generated_imgs'
     CLEANUP_MUSIC_DOWNLOADS = 'cleanup_music_downloads'
     UPDATE_DBD_PERKS = 'update_dbd_perks'
+    CLEANUP_DBD_RAG_DATA = 'cleanup_dbd_rag_data'
 
 @dataclass
 class TaskInfo:
@@ -36,6 +38,11 @@ def mRunTask(task: TaskInfo) -> None:
         case TaskNames.UPDATE_DBD_PERKS.value:
             mLogInfo(f'Running task {task.name}')
             DBDScraper().run()
+            mLogInfo(f'Task {task.name} finished')
+        case TaskNames.CLEANUP_DBD_RAG_DATA.value:
+            mLogInfo(f'Running task {task.name}')
+            _rag = get_rag_pipeline()
+            _rag.clear_rag_data()
             mLogInfo(f'Task {task.name} finished')
         case _:
             mLogError(f'Task {task.name} not found')

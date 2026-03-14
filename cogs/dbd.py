@@ -79,6 +79,45 @@ class Dbd(commands.Cog, name='dbd'):
                                         view=ResultsButtons(self.__handler, aCtx, _perks), wait=True)
         # Store message
         self.__handler.mSetLastBuildId(aCtx, _msg.id)
+        
+    @app_commands.command(name='dbdsynergy', description='Returns a synergistic build revolving around a specific perk.')
+    @app_commands.describe(perk='The name of the perk to build around.')
+    async def mSynergyBuild(self, aCtx: Interaction, perk: str):
+        """
+        This method returns a synergistic Dead by Daylight survivor perk build based on a specific perk.
+
+        Args:
+            aCtx (Interaction): The context of the command.
+            perk (str): The perk to revolve around.
+        """
+        # Log command call
+        mLogInfo(f'Command {aCtx.command} called by {aCtx.user}')
+        await aCtx.response.defer(thinking=True)
+        # Create a handler for current user
+        try:
+            _perks, _collage, _explanation = await self.__handler.mGetSynergyBuild(aCtx, perk)
+            # Send message
+            _formattedPerks = "  |  ".join(_perks)
+            _embed = self.mEmbedMessage(_explanation, aTitle=f"Synergy build for **{aCtx.user.name}**", aImagePath=_collage.filename)
+            _msg = await aCtx.followup.send(f'{_formattedPerks}', embed=_embed, file=_collage,
+                                            view=ResultsButtons(self.__handler, aCtx, _perks), wait=True)
+            # Store message
+            self.__handler.mSetLastBuildId(aCtx, _msg.id)
+        except Exception as e:
+            mLogError(e)
+            _errorMsg = "Sorry, I couldn't generate a synergy build right now. Is the Ollama service running?"
+            await aCtx.followup.send(_errorMsg)
+
+    @mSynergyBuild.autocomplete("perk")
+    async def mSynergyBuildAutoComplete(self, aCtx: Interaction, aCurrInput: str) -> list[app_commands.Choice[int|str]]:
+        # Show first 20 perks if no input
+        if aCurrInput == "":
+            return [app_commands.Choice(name=_perk, value=_perk) for _perk in self.__handler.mGetAllPerkNames(aCtx)[:20]]
+        # Show perks that match the input (fuzzy)
+        _choiceList = mListMostSimilarPartial(aCurrInput, self.__handler.mGetAllPerkNames(aCtx))
+        if not _choiceList:
+            return [app_commands.Choice(name=aCurrInput, value=aCurrInput)]
+        return [app_commands.Choice(name=_choice, value=_choice) for _choice in _choiceList[:25]]
 
 
     @app_commands.command(name='dbdretry', description='Reruns previous roulette only at a specified index.')
@@ -523,6 +562,15 @@ class Dbd(commands.Cog, name='dbd'):
             await aCtx.response.send_message('You are not authorized to kill the bot.')
             return
         mLogInfo('Killing bot')
+
+        # Kill ollama
+        import subprocess
+        try:
+            mLogInfo('Killing Ollama service...')
+            subprocess.run(['taskkill', '/F', '/IM', 'ollama.exe', '/T'], capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
+        except Exception as e:
+            mLogError(f"Error killing Ollama: {e}")
+
         self.__handler.mUpdateBlacklistToDB()
         time.sleep(10)
         await aCtx.response.send_message('Killing the bot :( Goodbye!')

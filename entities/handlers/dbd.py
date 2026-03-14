@@ -16,6 +16,17 @@ def mHandleDbdErrors(error_msg: str):
             try:
                 return func(*args, **kwargs)
             except Exception as e:
+                raise e
+        return wrapper
+    return decorator
+
+def mHandleAsyncDbdErrors(error_msg: str):
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            try:
+                return await func(*args, **kwargs)
+            except Exception as e:
                 mLogError(f'{error_msg}: {e}')
                 raise e
         return wrapper
@@ -152,6 +163,10 @@ class DbdHandler:
     @mHandleDbdErrors('Error getting usage stats')
     def mGetUsageStats(self, aCtx: Interaction, aUser: str = None) -> dict:
         return self.mCreateWorker(aCtx).mGetUsageStats(aUser=aUser)
+
+    @mHandleAsyncDbdErrors('Error getting synergy build')
+    async def mGetSynergyBuild(self, aCtx: Interaction, aPerkName: str) -> tuple:
+        return await self.mCreateWorker(aCtx).mGetSynergyBuild(aCtx, aPerkName)
 
     def mUpdateBlacklistToDB(self) -> None:
         for _worker in self.__workers.values():

@@ -37,6 +37,13 @@ class Runner:
             mExtractZip(_perkZipName, _perkDir, aRemoveWhenDone=True)
             mLogInfo('Perk images downloaded and extracted')
 
+        import subprocess
+        try:
+            mLogInfo('Starting Ollama service...')
+            subprocess.Popen(['ollama', 'serve'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=subprocess.CREATE_NO_WINDOW)
+        except Exception as e:
+            mLogInfo(f"Could not start Ollama: {e}")
+
         # Run healthcheck worker
         _hcWorker = HealthWorker()
         _hcThread = Thread(target=_hcWorker.mRun, daemon=True)

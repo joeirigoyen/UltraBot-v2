@@ -3,5 +3,7 @@
     "GENERATED_IMG_DIR": "assets/dbd/imgs/generated",
     "PERKS_IMG_DIR": "assets/dbd/imgs/perks",
     "PERKS_IMG_URL": "https://drive.google.com/file/d/1Zo5kIN4jUiOX2Qtl1zPctqDmLZ7O4Y4y/view?usp=drive_link",
-    "DBD_DB_UPDATE_MINS": 60
+    "DBD_DB_UPDATE_MINS": 60,
+    "OLLAMA_URL": "http://localhost:11434/api/generate",
+    "OLLAMA_MODEL": "llama3"
 }

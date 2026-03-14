@@ -1,5 +1,6 @@
 # Generic imports
 import os
+import aiohttp
 
 # Specific imports
 from discord import File, Interaction
@@ -10,8 +11,11 @@ from log.logger import mLogInfo
 from entities.utils.datahandler import DBDDataHandler
 from entities.utils.files import mGetAssetsDir, mGetConfigProperty
 from entities.utils.images import mCreateCollage, mSaveImage
+from entities.utils.rare import mFindMostSimilarPartial
 from entities.utils.sql import SQLRetriever
 from entities.workers.dbd.perks import PerkTracker
+from entities.workers.dbd.rag import get_rag_pipeline
+import json
 
 
 class DbdWorker:
@@ -288,6 +292,107 @@ class DbdWorker:
 
     def mGetUsageStats(self, aUser: str = None) -> dict:
         return self.__sql.mGetUsageStats(aUser)
+
+    async def mGetSynergyBuild(self, aCtx: Interaction, aPerkName: str) -> tuple[list[str], File, str]:
+        # Resolve the selected perk name
+        _allPerks = self.mGetWhitelistedPerkNames()
+        _resolvedPerk = mFindMostSimilarPartial(aPerkName, _allPerks)
+        
+        # Get its category/effect from help
+        _helpInfo = self.mGetHelp(_resolvedPerk)
+        _perkDescription = _helpInfo["effect"] if _helpInfo else "Unknown effect."
+        
+        # Initialize and utilize the RAG Pipeline
+        _rag = get_rag_pipeline()
+        
+        # 1. Ensure LLM JSON and ChromaDB are initialized (fast if already exists)
+        _allPerkData = self.mGetAllPerks()
+        _rag.init_llm_perk_data(_allPerkData)
+        _rag.init_chromadb()
+        
+        # 2. Retrieve top 20 similar perks, strictly omitting the user's blacklist
+        _blacklist = list(self.mGetBlacklistedPerkNames())
+        _similarPerkNames = _rag.retrieve_similar_perks(_perkDescription, blacklist=_blacklist, top_k=20)
+        
+        # Hydrate the perk names with descriptions for the LLM
+        _contextStr = ""
+        for _pName in _similarPerkNames:
+            if _pName == _resolvedPerk: continue # Don't provide target perk as suggestion
+            _hInfo = self.mGetHelp(_pName)
+            _desc = _hInfo["effect"] if _hInfo else ""
+            _contextStr += f"- {_pName}: {_desc}\n"
+
+        # Compile JSON-enforced prompt
+        _prompt = (
+            f"You are an expert at Dead by Daylight survivor builds. "
+            f"Your task is to craft a highly synergistic and optimal 4-perk build centered around the perk '{_resolvedPerk}'.\n"
+            f"The effect of '{_resolvedPerk}' is: '{_perkDescription}'.\n\n"
+            f"You MUST choose exactly 3 other perks from the following list of mechanically similar possibilities:\n"
+            f"{_contextStr}\n"
+            f"Do NOT include '{_resolvedPerk}' in the 3 suggestions.\n"
+            f"Your response MUST be exclusively a valid JSON object matching this exact schema, and nothing else:\n"
+            f"{{\n"
+            f"  \"build_name\": \"A catchy name for the build\",\n"
+            f"  \"perks\": [\"Perk 1\", \"Perk 2\", \"Perk 3\", \"Perk 4\"],\n"
+            f"  \"strategy\": \"A brief, 2-3 sentence explanation of how the build works and how to play it for maximum advantage.\"\n"
+            f"}}\n"
+            f"Ensure the list \"perks\" contains exactly 4 strings, including '{_resolvedPerk}'."
+        )
+        
+        _ollamaUrl = mGetConfigProperty("OLLAMA_URL") or "http://localhost:11434/api/generate"
+        _ollamaModel = mGetConfigProperty("OLLAMA_MODEL") or "llama3.1"
+        
+        mLogInfo(f"Requesting synergy build from Ollama for perk '{_resolvedPerk}' via JSON RAG...")
+        async with aiohttp.ClientSession() as session:
+            async with session.post(_ollamaUrl, json={
+                "model": _ollamaModel,
+                "prompt": _prompt,
+                "stream": False,
+                "format": "json"    # Enforce JSON output via Ollama API
+            }) as response:
+                if response.status != 200:
+                    raise Exception(f"Ollama API returned status {response.status}")
+                _data = await response.json()
+                _responseStr = _data.get("response", "")
+                
+        # Parse the JSON response
+        _suggestedPerks = []
+        _explanation = "No explanation provided."
+        _buildName = ""
+        try:
+            _jsonResp = json.loads(_responseStr)
+            _suggestedPerks = _jsonResp.get("perks", [])
+            _explanation = _jsonResp.get("strategy", _explanation)
+            _buildName = _jsonResp.get("build_name", "")
+            if _buildName:
+                _explanation = f"**{_buildName}**\n\n" + _explanation
+        except json.JSONDecodeError as e:
+            mLogError(f"Failed to decode Ollama JSON response: {e}\nRaw: {_responseStr}")
+
+        # Validate perks against whitelist
+        _finalBuild = [_resolvedPerk]
+        for p in _suggestedPerks:
+            if not isinstance(p, str) or not p: continue
+            _matched = mFindMostSimilarPartial(p, _allPerks)
+            if _matched and _matched not in _finalBuild and len(_finalBuild) < self.__tracker.BUILD_SIZE:
+                _finalBuild.append(_matched)
+                
+        # Fallback: Fill the rest with random valid perks if the LLM hallucinated heavily or returned < 4 valid
+        while len(_finalBuild) < self.__tracker.BUILD_SIZE:
+            mLogInfo("LLM provided invalid/blacklisted perks. Falling back to random whitelisted perk.")
+            _newPerk = self.__tracker.mGetRandomValidPerk()
+            if _newPerk not in _finalBuild:
+                _finalBuild.append(_newPerk)
+                
+        # Set current build to this synergy build
+        self.__tracker.mUpdateLastRoll(_finalBuild)
+        
+        # Generate collage
+        _imagePath = self.mGenerateCollage(aCtx, _finalBuild)
+        from discord import File
+        _image = File(_imagePath)
+        
+        return _finalBuild, _image, _explanation
 
     def mKillSQLRetriever(self) -> None:
         del self.__sql
