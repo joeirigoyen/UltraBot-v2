@@ -312,7 +312,7 @@ class DbdWorker:
         
         # 2. Retrieve top 20 similar perks, strictly omitting the user's blacklist
         _blacklist = list(self.mGetBlacklistedPerkNames())
-        _similarPerkNames = _rag.retrieve_similar_perks(_perkDescription, blacklist=_blacklist, top_k=20)
+        _similarPerkNames = _rag.retrieve_hybrid(_perkDescription, blacklist=_blacklist, top_k=20)
         
         # Hydrate the perk names with descriptions for the LLM
         _contextStr = ""

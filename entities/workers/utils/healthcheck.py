@@ -24,7 +24,7 @@ class TaskNames(Enum):
 @dataclass
 class TaskInfo:
     name: str
-    interval: timedelta
+    interval: int
     last_run: datetime
     next_run: datetime
 
@@ -71,12 +71,14 @@ class HealthWorker:
     def mCalculateNextRun(aLastRun: datetime, aInterval: timedelta | int) -> datetime:
         # Convert interval to timedelta if int
         if isinstance(aInterval, int):
-            aInterval = timedelta(minutes=aInterval)
-        # If next run is in the past, set next run to now + interval
-        if aLastRun + aInterval < datetime.now():
-            _nextRun = datetime.now() + aInterval
+            _intervalTd = timedelta(minutes=aInterval)
+        else:
+            _intervalTd = aInterval
+        # If next run is in the past, set next run to now
+        if aLastRun + _intervalTd < datetime.now():
+            _nextRun = datetime.now()
             return _nextRun
-        return aLastRun + aInterval
+        return aLastRun + _intervalTd
 
     @staticmethod
     def mDateTimeToStr(aDateTime: datetime) -> str:
@@ -97,7 +99,7 @@ class HealthWorker:
             if _lastRunStr != _taskInfo.get('last_run'):
                 _taskInfo['last_run'] = _lastRunStr
             # Calculate next run
-            _interval = _taskInfo.get('interval', timedelta(minutes=60))
+            _interval = _taskInfo.get('interval', 60)
             _nextRun = self.mCalculateNextRun(_lastRunDt, _interval)
             _task = TaskInfo(_taskName, _interval, _lastRunDt, _nextRun)
             _tasks.append(_task)
