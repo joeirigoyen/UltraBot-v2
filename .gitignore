@@ -5,36 +5,20 @@ __pycache__/
 
 # Ignore all PNG files
 *.png
-
 # Ignore environment files
 *.env
 qodana.yaml
 *.exe
-
 # Ignore downloads of images and other media
 assets/music/
 assets/dbd/
 utils/musicdownloads/
-
 # Ignore virtual environment files
 ultravenv/
 site-packages/
-
 # Ignore all log files
 *.log
 *.idea
-# Exclude local result and IDE files
-result.json
-.idea/
-
-# Exclude local result and IDE files
-result.json
-.idea/
-
-# Exclude local result and IDE files
-result.json
-.idea/
-
 # Exclude local result and IDE files
 result.json
 .idea/
