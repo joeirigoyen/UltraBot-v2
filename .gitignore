@@ -23,3 +23,22 @@ site-packages/
 # Ignore all log files
 *.log
 *.idea
+# Exclude local result and IDE files
+result.json
+.idea/
+
+# Exclude local result and IDE files
+result.json
+.idea/
+
+# Exclude local result and IDE files
+result.json
+.idea/
+
+# Exclude local result and IDE files
+result.json
+.idea/
+
+# Exclude local result and IDE files
+result.json
+.idea/
